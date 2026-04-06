@@ -1,49 +1,133 @@
+/* ─── BLUEPRINT DESIGN SYSTEM ─────────────────────────────────────────────── */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bp-bg:         #0a1628;
+  --bp-line:       rgba(100, 160, 240, 0.15);
+  --bp-line-fine:  rgba(100, 160, 240, 0.04);
+  --bp-text:       #a8c4e8;
+  --bp-text-dim:   rgba(100, 160, 240, 0.3);
+  --bp-text-muted: rgba(100, 160, 240, 0.2);
+  --bp-accent:     #c8ddf5;
+  --bp-hover:      #0d1e38;
+
+  --font-mono:   var(--font-space-mono), 'Space Mono', monospace;
+  --font-serif:  var(--font-instrument-serif), 'Instrument Serif', serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── RESET ────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-html {
-  height: 100%;
+html, body {
+  width: 100%;
+  min-height: 100%;
 }
 
-html,
 body {
-  max-width: 100vw;
+  background: var(--bp-bg);
+  color: var(--bp-text);
+  font-family: var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* ─── BLUEPRINT GRID BACKGROUND ────────────────────────────────────────────── */
+.bp-grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(100, 160, 240, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100, 160, 240, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+.bp-grid-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(100, 160, 240, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100, 160, 240, 0.015) 1px, transparent 1px);
+  background-size: 8px 8px;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/* ─── LAYOUT ────────────────────────────────────────────────────────────────── */
+.bp-root {
+  background: var(--bp-bg);
+  color: var(--bp-text);
+  font-family: var(--font-mono);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+.bp-container {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 2rem 4rem;
+}
+
+/* ─── COLLECTIONS GRID ──────────────────────────────────────────────────────── */
+.bp-collections-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(100, 160, 240, 0.08);
+  margin-bottom: 3rem;
+}
+
+@media (max-width: 640px) {
+  .bp-collections-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
+}
+
+/* ─── ANIMATIONS ────────────────────────────────────────────────────────────── */
+.bp-fade-in {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: bpFadeIn 0.6s ease forwards;
+}
+
+@keyframes bpFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── CROSSHAIR ─────────────────────────────────────────────────────────────── */
+.bp-crosshair {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+}
+
+.bp-crosshair::before,
+.bp-crosshair::after {
+  content: '';
+  position: absolute;
+  background: rgba(100, 160, 240, 0.25);
+}
+
+.bp-crosshair::before {
+  width: 1px;
+  height: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bp-crosshair::after {
+  height: 1px;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
 }
