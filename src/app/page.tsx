@@ -100,7 +100,7 @@ function ScatterMap() {
   useEffect(() => {
     const total = 20 * 8;
     const active = Math.floor(total * 0.38);
-    const arr = Array.from({ length: total }, (_, i) => (i < active ? 1 : 0));
+    const arr: number[] = Array.from({ length: total }, (_, i) => (i < active ? 1 : 0));
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
