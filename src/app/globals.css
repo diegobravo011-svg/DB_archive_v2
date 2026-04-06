@@ -1,153 +1,120 @@
 /* ─── DESIGN SYSTEM — DB_archives_v2 ─────────────────────────────────────── */
-
 :root {
   --bg:           #0c1410;
   --bg-hover:     #121f14;
   --bg-surface:   #0f1a0d;
   --line:         rgba(140, 200, 150, 0.18);
   --line-fine:    rgba(140, 200, 150, 0.07);
-  --text:         #c4dcc4;      /* texto base — verde sage claro */
-  --text-dim:     #8aab8a;      /* texto secundario — verde medio legible */
-  --text-muted:   #638a6e;      /* labels, anotaciones */
-  --text-faint:   #4d7058;      /* metadata burocrática — sutil pero visible */
-  --accent:       #d8ecd8;      /* títulos y énfasis */
+  --text:         #c4dcc4;
+  --text-dim:     #8aab8a;
+  --text-muted:   #638a6e;
+  --text-faint:   #4d7058;
+  --accent:       #d8ecd8;
   --mark:         rgba(140, 200, 150, 0.15);
-
-  --font-mono:   var(--font-space-mono), 'Space Mono', monospace;
-  --font-serif:  var(--font-instrument-serif), 'Instrument Serif', serif;
+  --font-mono:    var(--font-space-mono), 'Space Mono', monospace;
+  --font-serif:   var(--font-instrument-serif), 'Instrument Serif', serif;
 }
 
-/* ─── RESET ─────────────────────────────────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  zoom: 1.5;
+}
+@media (max-width: 640px) {
+  html { zoom: 1; }
 }
 
-html, body {
-  width: 100%;
-  min-height: 100%;
-}
+html, body { width: 100%; min-height: 100%; }
 
 body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-mono);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-/* ─── GRID BACKGROUND ────────────────────────────────────────────────────────── */
+/* ─── GRID BACKGROUND ────────────────────────────────────────────────────── */
 .grid-bg {
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(80, 160, 100, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(80, 160, 100, 0.035) 1px, transparent 1px);
+    linear-gradient(rgba(140,200,150,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(140,200,150,0.035) 1px, transparent 1px);
   background-size: 40px 40px;
   pointer-events: none;
   z-index: 0;
 }
-
 .grid-bg::before {
   content: '';
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(80, 160, 100, 0.012) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(80, 160, 100, 0.012) 1px, transparent 1px);
+    linear-gradient(rgba(140,200,150,0.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(140,200,150,0.012) 1px, transparent 1px);
   background-size: 8px 8px;
 }
 
-/* ─── LAYOUT ─────────────────────────────────────────────────────────────────── */
+/* ─── LAYOUT ─────────────────────────────────────────────────────────────── */
 .root {
   background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-mono);
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
 }
-
 .container {
   position: relative;
   z-index: 1;
-  max-width: 860px;
+  max-width: 800px;
   margin: 0 auto;
-  padding: 3rem 2rem 5rem;
+  padding: 2rem 1.5rem 4rem;
 }
 
-/* ─── DOUBLE LINE ────────────────────────────────────────────────────────────── */
-.double-line {
-  width: 100%;
-  border: none;
-  border-top: 0.5px solid var(--line);
-  margin-bottom: 3px;
-}
-.double-line + .double-line {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-/* ─── TABLE ──────────────────────────────────────────────────────────────────── */
-.samples-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: var(--font-mono);
-}
-
+/* ─── TABLE ──────────────────────────────────────────────────────────────── */
+.samples-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); }
 .samples-table th {
-  font-size: 7px;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  border-bottom: 0.5px solid var(--line);
-  padding: 0.5rem 0.5rem 0.75rem;
-  text-align: left;
-  font-weight: 400;
+  font-size: 7px; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--text-faint); border-bottom: 0.5px solid var(--line);
+  padding: 0.5rem 0.5rem 0.75rem; text-align: left; font-weight: 400;
+}
+.samples-table td { padding: 0.65rem 0.5rem; border-bottom: 0.5px solid rgba(140,200,150,0.07); vertical-align: top; }
+.samples-table tr:hover td { background: var(--bg-hover); }
+
+/* ─── METHODOLOGY GRID ───────────────────────────────────────────────────── */
+.method-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(140,200,150,0.07);
+  margin-bottom: 3rem;
+}
+@media (max-width: 600px) {
+  .method-grid { grid-template-columns: 1fr; }
 }
 
-.samples-table td {
-  padding: 0.75rem 0.5rem;
-  border-bottom: 0.5px solid rgba(80, 160, 100, 0.07);
-  vertical-align: top;
-}
-
-.samples-table tr:hover td {
-  background: var(--bg-hover);
-}
-
-/* ─── ANIMATIONS ─────────────────────────────────────────────────────────────── */
+/* ─── ANIMATIONS ─────────────────────────────────────────────────────────── */
 .fade-in {
   opacity: 0;
   transform: translateY(6px);
   animation: fadeIn 0.5s ease forwards;
 }
+@keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
 
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ─── HDD LOGO ───────────────────────────────────────────────────────────── */
+.hdd-logo-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  opacity: 0.75;
 }
-
-/* ─── METHODOLOGY GRID ───────────────────────────────────────────────────────── */
-.method-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: rgba(80, 160, 100, 0.07);
-  margin-bottom: 3rem;
-}
-
-@media (max-width: 600px) {
-  .method-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 640px) {
+  .hdd-logo-wrap {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0.08;
+    pointer-events: none;
   }
-
-  .samples-table th:nth-child(3),
-  .samples-table td:nth-child(3) {
-    display: none;
-  }
+  .header-left { padding-left: 60px; }
 }
