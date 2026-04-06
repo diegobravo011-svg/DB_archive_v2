@@ -2,16 +2,16 @@
 
 :root {
   --bg:           #0c1410;
-  --bg-hover:     #111a10;
+  --bg-hover:     #121f14;
   --bg-surface:   #0f1a0d;
-  --line:         rgba(80, 160, 100, 0.12);
-  --line-fine:    rgba(80, 160, 100, 0.035);
-  --text:         #a8bfa8;
-  --text-dim:     rgba(120, 180, 120, 0.30);
-  --text-muted:   rgba(80, 160, 100, 0.20);
-  --text-faint:   rgba(80, 160, 100, 0.14);
-  --accent:       #c2d9b8;
-  --mark:         rgba(80, 160, 100, 0.22);
+  --line:         rgba(140, 200, 150, 0.18);
+  --line-fine:    rgba(140, 200, 150, 0.07);
+  --text:         #c4dcc4;      /* texto base — verde sage claro */
+  --text-dim:     #8aab8a;      /* texto secundario — verde medio legible */
+  --text-muted:   #638a6e;      /* labels, anotaciones */
+  --text-faint:   #4d7058;      /* metadata burocrática — sutil pero visible */
+  --accent:       #d8ecd8;      /* títulos y énfasis */
+  --mark:         rgba(140, 200, 150, 0.15);
 
   --font-mono:   var(--font-space-mono), 'Space Mono', monospace;
   --font-serif:  var(--font-instrument-serif), 'Instrument Serif', serif;

@@ -118,15 +118,15 @@ function Histogram() {
         {cells.map((v, i) => (
           <div key={i} style={{
             height: 14,
-            background: v ? "rgba(80,160,100,0.10)" : "rgba(80,160,100,0.03)",
-            border: `0.5px solid ${v ? "rgba(80,160,100,0.25)" : "rgba(80,160,100,0.08)"}`,
+            background: v ? "rgba(140,200,150,0.12)" : "rgba(140,200,150,0.03)",
+            border: `0.5px solid ${v ? "rgba(140,200,150,0.30)" : "rgba(140,200,150,0.09)"}`,
             position: "relative",
           }}>
             {v === 1 && (
               <div style={{
                 position: "absolute",
                 inset: 3,
-                border: "0.5px solid rgba(80,160,100,0.15)",
+                border: "0.5px solid rgba(140,200,150,0.20)",
               }} />
             )}
           </div>
@@ -155,7 +155,7 @@ function StatusBadge({ status }: { status: string }) {
       letterSpacing: "0.15em",
       textTransform: "uppercase",
       color: isPending ? "rgba(80,160,100,0.18)" : "var(--text-dim)",
-      border: `0.5px ${isPending ? "dashed" : "solid"} ${isPending ? "rgba(80,160,100,0.12)" : "rgba(80,160,100,0.25)"}`,
+      border: `0.5px ${isPending ? "dashed" : "solid"} ${isPending ? "rgba(140,200,150,0.18)" : "rgba(140,200,150,0.40)"}`,
       padding: "0.15rem 0.4rem",
     }}>
       {status}
@@ -262,7 +262,7 @@ export default function FieldReport() {
                     </td>
                     <td style={{ minWidth: "12rem" }}>
                       {s.observation !== "—" ? (
-                        <em style={{ ...serif, fontSize: 12, color: "rgba(180,210,160,0.48)" }}>
+                        <em style={{ ...serif, fontSize: 12, color: "#9ec49a" }}>
                           {s.observation}
                         </em>
                       ) : (
@@ -358,7 +358,7 @@ export default function FieldReport() {
                 {item.num}
               </span>
               {item.italic ? (
-                <em style={{ ...serif, fontSize: 12, color: "rgba(180,210,160,0.48)", lineHeight: 1.8, whiteSpace: "pre-line" }}>
+                <em style={{ ...serif, fontSize: 13, color: "var(--accent-green)", lineHeight: 1.8, whiteSpace: "pre-line" }}>
                   {item.text}
                 </em>
               ) : (
