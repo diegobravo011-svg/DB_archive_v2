@@ -1,20 +1,23 @@
-/* ─── BLUEPRINT DESIGN SYSTEM ─────────────────────────────────────────────── */
+/* ─── DESIGN SYSTEM — DB_archives_v2 ─────────────────────────────────────── */
 
 :root {
-  --bp-bg:         #0a1628;
-  --bp-line:       rgba(100, 160, 240, 0.15);
-  --bp-line-fine:  rgba(100, 160, 240, 0.04);
-  --bp-text:       #a8c4e8;
-  --bp-text-dim:   rgba(100, 160, 240, 0.3);
-  --bp-text-muted: rgba(100, 160, 240, 0.2);
-  --bp-accent:     #c8ddf5;
-  --bp-hover:      #0d1e38;
+  --bg:           #0c1410;
+  --bg-hover:     #111a10;
+  --bg-surface:   #0f1a0d;
+  --line:         rgba(80, 160, 100, 0.12);
+  --line-fine:    rgba(80, 160, 100, 0.035);
+  --text:         #a8bfa8;
+  --text-dim:     rgba(120, 180, 120, 0.30);
+  --text-muted:   rgba(80, 160, 100, 0.20);
+  --text-faint:   rgba(80, 160, 100, 0.14);
+  --accent:       #c2d9b8;
+  --mark:         rgba(80, 160, 100, 0.22);
 
   --font-mono:   var(--font-space-mono), 'Space Mono', monospace;
   --font-serif:  var(--font-instrument-serif), 'Instrument Serif', serif;
 }
 
-/* ─── RESET ────────────────────────────────────────────────────────────────── */
+/* ─── RESET ─────────────────────────────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -27,107 +30,124 @@ html, body {
 }
 
 body {
-  background: var(--bp-bg);
-  color: var(--bp-text);
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--font-mono);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-/* ─── BLUEPRINT GRID BACKGROUND ────────────────────────────────────────────── */
-.bp-grid-bg {
+/* ─── GRID BACKGROUND ────────────────────────────────────────────────────────── */
+.grid-bg {
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(100, 160, 240, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(100, 160, 240, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(80, 160, 100, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(80, 160, 100, 0.035) 1px, transparent 1px);
   background-size: 40px 40px;
   pointer-events: none;
   z-index: 0;
 }
 
-.bp-grid-bg::before {
+.grid-bg::before {
   content: '';
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(100, 160, 240, 0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(100, 160, 240, 0.015) 1px, transparent 1px);
+    linear-gradient(rgba(80, 160, 100, 0.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(80, 160, 100, 0.012) 1px, transparent 1px);
   background-size: 8px 8px;
 }
 
-/* ─── LAYOUT ────────────────────────────────────────────────────────────────── */
-.bp-root {
-  background: var(--bp-bg);
-  color: var(--bp-text);
+/* ─── LAYOUT ─────────────────────────────────────────────────────────────────── */
+.root {
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--font-mono);
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
 }
 
-.bp-container {
+.container {
   position: relative;
   z-index: 1;
-  max-width: 900px;
+  max-width: 860px;
   margin: 0 auto;
-  padding: 3rem 2rem 4rem;
+  padding: 3rem 2rem 5rem;
 }
 
-/* ─── COLLECTIONS GRID ──────────────────────────────────────────────────────── */
-.bp-collections-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: rgba(100, 160, 240, 0.08);
-  margin-bottom: 3rem;
+/* ─── DOUBLE LINE ────────────────────────────────────────────────────────────── */
+.double-line {
+  width: 100%;
+  border: none;
+  border-top: 0.5px solid var(--line);
+  margin-bottom: 3px;
+}
+.double-line + .double-line {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
-@media (max-width: 640px) {
-  .bp-collections-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* ─── TABLE ──────────────────────────────────────────────────────────────────── */
+.samples-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
 }
 
-/* ─── ANIMATIONS ────────────────────────────────────────────────────────────── */
-.bp-fade-in {
+.samples-table th {
+  font-size: 7px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  border-bottom: 0.5px solid var(--line);
+  padding: 0.5rem 0.5rem 0.75rem;
+  text-align: left;
+  font-weight: 400;
+}
+
+.samples-table td {
+  padding: 0.75rem 0.5rem;
+  border-bottom: 0.5px solid rgba(80, 160, 100, 0.07);
+  vertical-align: top;
+}
+
+.samples-table tr:hover td {
+  background: var(--bg-hover);
+}
+
+/* ─── ANIMATIONS ─────────────────────────────────────────────────────────────── */
+.fade-in {
   opacity: 0;
-  transform: translateY(8px);
-  animation: bpFadeIn 0.6s ease forwards;
+  transform: translateY(6px);
+  animation: fadeIn 0.5s ease forwards;
 }
 
-@keyframes bpFadeIn {
+@keyframes fadeIn {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* ─── CROSSHAIR ─────────────────────────────────────────────────────────────── */
-.bp-crosshair {
-  position: absolute;
-  width: 16px;
-  height: 16px;
+/* ─── METHODOLOGY GRID ───────────────────────────────────────────────────────── */
+.method-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(80, 160, 100, 0.07);
+  margin-bottom: 3rem;
 }
 
-.bp-crosshair::before,
-.bp-crosshair::after {
-  content: '';
-  position: absolute;
-  background: rgba(100, 160, 240, 0.25);
-}
+@media (max-width: 600px) {
+  .method-grid {
+    grid-template-columns: 1fr;
+  }
 
-.bp-crosshair::before {
-  width: 1px;
-  height: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.bp-crosshair::after {
-  height: 1px;
-  width: 100%;
-  top: 50%;
-  transform: translateY(-50%);
+  .samples-table th:nth-child(3),
+  .samples-table td:nth-child(3) {
+    display: none;
+  }
 }

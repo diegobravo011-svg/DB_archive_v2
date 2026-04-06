@@ -19,15 +19,9 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "skeleton photographs — a working draft of seeing",
+  title: "DB_archives_v2",
   description:
-    "Blueprint photography portfolio — arranged by proximity of feeling, not by date. A working draft of seeing.",
-  openGraph: {
-    title: "skeleton photographs — a working draft of seeing",
-    description:
-      "Blueprint photography portfolio — arranged by proximity of feeling, not by date.",
-    type: "website",
-  },
+    "Informe técnico de campo. Registro visual acumulado durante campañas de observación. Estado: en proceso.",
 };
 
 export default function RootLayout({

@@ -2,99 +2,98 @@
 
 import { useEffect, useState } from "react";
 
-// ─── TYPES ────────────────────────────────────────────────────────────────────
-interface Collection {
-  id: string;
-  index: string;
-  name: string;
-  status: string;
-  icon: "circle" | "rect" | "wave" | "concentric" | "horizon" | "void";
-}
+// ─── EDITABLE DATA ────────────────────────────────────────────────────────────
+const AUTHOR = {
+  initials: "DB",
+  startYear: "2019",
+  lat: "",
+  lon: "",
+};
 
-// ─── DATA — edit these with your real collections ─────────────────────────────
-const COLLECTIONS: Collection[] = [
-  { id: "a", index: "[ A ]", name: "luz disponible", status: "n frames — unresolved", icon: "circle" },
-  { id: "b", index: "[ B ]", name: "interiores",     status: "n frames — unresolved", icon: "rect"   },
-  { id: "c", index: "[ C ]", name: "tránsito",       status: "n frames — unresolved", icon: "wave"   },
-  { id: "d", index: "[ D ]", name: "figuras",        status: "n frames — unresolved", icon: "concentric" },
-  { id: "e", index: "[ E ]", name: "horizonte",      status: "n frames — unresolved", icon: "horizon" },
-  { id: "f", index: "[ F ]", name: "— pending —",    status: "not yet named",         icon: "void"   },
+const SAMPLES = [
+  {
+    id: "DB-001",
+    unit: "luz disponible",
+    lithology:
+      "Material de baja cohesión. Alta sensibilidad a condiciones de iluminación ambiente. Textura variable. Granulometría fina a media.",
+    observation: "depende de lo que ya estaba ahí antes de llegar",
+    status: "abierto",
+  },
+  {
+    id: "DB-002",
+    unit: "interiores",
+    lithology:
+      "Unidad de alta presión confinante. Estructuras de compresión visibles. Escasa movilidad de fluidos.",
+    observation: "el espacio como agente, no como escenario",
+    status: "abierto",
+  },
+  {
+    id: "DB-003",
+    unit: "tránsito",
+    lithology:
+      "Superficie de transporte activo. Inconformidad basal con unidad subyacente. Evidencia de erosión lateral.",
+    observation: "nada permanece lo suficiente como para ser estudiado in situ",
+    status: "abierto",
+  },
+  {
+    id: "DB-004",
+    unit: "figuras",
+    lithology:
+      "Remanente erosional. Resistencia diferencial respecto a la matriz. Morfología preservada por contraste litológico.",
+    observation: "lo que sobrevive al corte define la forma",
+    status: "abierto",
+  },
+  {
+    id: "DB-005",
+    unit: "horizonte",
+    lithology:
+      "Superficie de contacto entre formaciones. Discontinuidad composicional marcada. Plano de referencia.",
+    observation: "la línea no es el límite — es el argumento",
+    status: "abierto",
+  },
+  {
+    id: "DB-006",
+    unit: "[sin clasificar]",
+    lithology:
+      "Litología indeterminada. Muestra en proceso de descripción. No incluir en interpretación preliminar.",
+    observation: "—",
+    status: "pendiente",
+  },
 ];
 
-const NOTES = [
-  { italic: true,  text: "these are not photographs." },
-  { italic: false, text: "these are the load-bearing walls of a visual practice." },
-  { italic: false, text: "arranged by proximity of feeling, not by date." },
-  { italic: false, text: "the captions are missing on purpose." },
-  { italic: true,  text: "what you found is the structure, not the building." },
-];
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+const mono: React.CSSProperties = { fontFamily: "var(--font-mono)" };
+const serif: React.CSSProperties = { fontFamily: "var(--font-serif)", fontStyle: "italic" };
 
-// ─── SVG FRAME ICONS ──────────────────────────────────────────────────────────
-function FrameIcon({ type }: { type: Collection["icon"] }) {
-  const base = "rgba(100,160,240,";
-  switch (type) {
-    case "circle":
-      return (
-        <svg viewBox="0 0 60 44" width={60} style={{ opacity: 0.4 }}>
-          <circle cx={30} cy={22} r={10} fill="none" stroke={base + "0.6)"} strokeWidth={0.5} />
-          <circle cx={30} cy={22} r={3}  fill={base + "0.3)"} />
-          <line x1={20} y1={22} x2={40} y2={22} stroke={base + "0.3)"} strokeWidth={0.5} />
-          <line x1={30} y1={12} x2={30} y2={32} stroke={base + "0.3)"} strokeWidth={0.5} />
-        </svg>
-      );
-    case "rect":
-      return (
-        <svg viewBox="0 0 60 44" width={60} style={{ opacity: 0.4 }}>
-          <rect x={15} y={10} width={30} height={24} fill="none" stroke={base + "0.6)"} strokeWidth={0.5} />
-          <rect x={20} y={15} width={8}  height={8}  fill={base + "0.15)"} stroke={base + "0.4)"} strokeWidth={0.5} />
-          <line x1={32} y1={17} x2={42} y2={17} stroke={base + "0.3)"} strokeWidth={0.5} />
-          <line x1={32} y1={21} x2={38} y2={21} stroke={base + "0.3)"} strokeWidth={0.5} />
-        </svg>
-      );
-    case "wave":
-      return (
-        <svg viewBox="0 0 60 44" width={60} style={{ opacity: 0.4 }}>
-          <path d="M10,34 Q20,10 30,22 Q40,34 50,14" fill="none" stroke={base + "0.6)"} strokeWidth={0.5} />
-          <circle cx={10} cy={34} r={1.5} fill={base + "0.4)"} />
-          <circle cx={30} cy={22} r={1.5} fill={base + "0.4)"} />
-          <circle cx={50} cy={14} r={1.5} fill={base + "0.4)"} />
-        </svg>
-      );
-    case "concentric":
-      return (
-        <svg viewBox="0 0 60 44" width={60} style={{ opacity: 0.4 }}>
-          <circle cx={30} cy={22} r={14} fill="none" stroke={base + "0.3)"} strokeWidth={0.5} strokeDasharray="2 3" />
-          <circle cx={30} cy={22} r={7}  fill="none" stroke={base + "0.5)"} strokeWidth={0.5} />
-          <circle cx={30} cy={22} r={2}  fill={base + "0.3)"} />
-        </svg>
-      );
-    case "horizon":
-      return (
-        <svg viewBox="0 0 60 44" width={60} style={{ opacity: 0.4 }}>
-          <line x1={10} y1={22} x2={50} y2={22} stroke={base + "0.4)"} strokeWidth={0.5} />
-          <line x1={10} y1={15} x2={50} y2={15} stroke={base + "0.2)"} strokeWidth={0.5} />
-          <line x1={10} y1={29} x2={50} y2={29} stroke={base + "0.2)"} strokeWidth={0.5} />
-          <rect x={22} y={17} width={16} height={10} fill={base + "0.08)"} stroke={base + "0.5)"} strokeWidth={0.5} />
-        </svg>
-      );
-    case "void":
-    default:
-      return (
-        <span style={{
-          fontSize: 8,
-          letterSpacing: "0.2em",
-          color: "rgba(100,160,240,0.15)",
-          textTransform: "uppercase",
-          fontFamily: "var(--font-mono)",
-        }}>
-          [ void ]
-        </span>
-      );
-  }
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <p style={{
+        ...mono,
+        fontSize: 7,
+        letterSpacing: "0.3em",
+        textTransform: "uppercase",
+        color: "var(--text-faint)",
+        marginBottom: "0.5rem",
+      }}>
+        {children}
+      </p>
+      <div style={{ width: "100%", height: "0.5px", background: "var(--line)", marginBottom: "1.5rem" }} />
+    </>
+  );
 }
 
-// ─── SCATTER MAP ──────────────────────────────────────────────────────────────
-function ScatterMap() {
+function DoubleLine() {
+  return (
+    <div style={{ marginBottom: "1.5rem" }}>
+      <div style={{ width: "100%", height: "0.5px", background: "var(--line)", marginBottom: 3 }} />
+      <div style={{ width: "100%", height: "0.5px", background: "var(--line)" }} />
+    </div>
+  );
+}
+
+// ─── HISTOGRAM (scatter map) ──────────────────────────────────────────────────
+function Histogram() {
   const [cells, setCells] = useState<number[]>([]);
 
   useEffect(() => {
@@ -119,363 +118,294 @@ function ScatterMap() {
         {cells.map((v, i) => (
           <div key={i} style={{
             height: 14,
-            background: v ? "rgba(100,160,240,0.07)" : "rgba(100,160,240,0.03)",
-            border: `0.5px solid ${v ? "rgba(100,160,240,0.2)" : "rgba(100,160,240,0.08)"}`,
+            background: v ? "rgba(80,160,100,0.10)" : "rgba(80,160,100,0.03)",
+            border: `0.5px solid ${v ? "rgba(80,160,100,0.25)" : "rgba(80,160,100,0.08)"}`,
             position: "relative",
           }}>
             {v === 1 && (
               <div style={{
                 position: "absolute",
                 inset: 3,
-                border: "0.5px solid rgba(100,160,240,0.15)",
+                border: "0.5px solid rgba(80,160,100,0.15)",
               }} />
             )}
           </div>
         ))}
       </div>
       <p style={{
+        ...mono,
         fontSize: 8,
-        letterSpacing: "0.15em",
-        color: "rgba(100,160,240,0.2)",
-        textTransform: "uppercase",
-        fontFamily: "var(--font-mono)",
+        letterSpacing: "0.12em",
+        color: "var(--text-faint)",
       }}>
-        density map — subject matter — unweighted
+        ■ exposición registrada &nbsp;&nbsp; □ sin registro &nbsp;&nbsp; n total: variable &nbsp;&nbsp; intervalo: no uniforme
       </p>
     </div>
   );
 }
 
-// ─── COLLECTION CARD ──────────────────────────────────────────────────────────
-function CollectionCard({ col }: { col: Collection }) {
-  const isVoid = col.icon === "void";
-  const [hovered, setHovered] = useState(false);
-
+// ─── SAMPLE STATUS BADGE ──────────────────────────────────────────────────────
+function StatusBadge({ status }: { status: string }) {
+  const isPending = status === "pendiente";
   return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        background: hovered && !isVoid ? "#0d1e38" : "#0a1628",
-        padding: "1.5rem 1.25rem",
-        position: "relative",
-        cursor: isVoid ? "default" : "pointer",
-        border: isVoid ? "0.5px dashed rgba(100,160,240,0.1)" : undefined,
-        transition: "background 0.2s",
-      }}
-    >
-      {/* index badge */}
-      <span style={{
-        position: "absolute",
-        top: "0.6rem",
-        right: "0.75rem",
-        fontSize: 7,
-        color: "rgba(100,160,240,0.2)",
-        letterSpacing: "0.1em",
-        fontFamily: "var(--font-mono)",
-      }}>
-        {col.index}
-      </span>
-
-      {/* frame */}
-      <div style={{
-        width: "100%",
-        aspectRatio: "4/3",
-        border: `0.5px ${isVoid ? "dashed" : "solid"} rgba(100,160,240,${isVoid ? "0.08" : "0.15"})`,
-        marginBottom: "0.75rem",
-        position: "relative",
-        overflow: "hidden",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}>
-        {/* X lines — placeholder técnico */}
-        {!isVoid && (
-          <svg
-            viewBox="0 0 100 75"
-            preserveAspectRatio="none"
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.07 }}
-          >
-            <line x1={0} y1={0} x2={100} y2={75} stroke="rgba(100,160,240,1)" strokeWidth={0.5} />
-            <line x1={100} y1={0} x2={0} y2={75} stroke="rgba(100,160,240,1)" strokeWidth={0.5} />
-          </svg>
-        )}
-
-        {/* visor corners */}
-        {(["tl", "tr", "bl", "br"] as const).map((pos) => (
-          <div key={pos} style={{
-            position: "absolute",
-            width: 8, height: 8,
-            top:    pos.startsWith("t") ? 4 : undefined,
-            bottom: pos.startsWith("b") ? 4 : undefined,
-            left:   pos.endsWith("l")   ? 4 : undefined,
-            right:  pos.endsWith("r")   ? 4 : undefined,
-            borderColor: "rgba(100,160,240,0.4)",
-            borderStyle: "solid",
-            borderWidth: (
-              pos === "tl" ? "1px 0 0 1px" :
-              pos === "tr" ? "1px 1px 0 0" :
-              pos === "bl" ? "0 0 1px 1px" :
-                             "0 1px 1px 0"
-            ),
-          }} />
-        ))}
-
-        {/* dashed inner border + icon */}
-        <div style={{
-          position: "absolute",
-          inset: 12,
-          border: `0.5px dashed rgba(100,160,240,${isVoid ? "0.06" : "0.1"})`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}>
-          <FrameIcon type={col.icon} />
-        </div>
-      </div>
-
-      <div style={{
-        fontSize: 9,
-        letterSpacing: "0.2em",
-        color: isVoid ? "rgba(100,160,240,0.2)" : "rgba(168,196,232,0.6)",
-        textTransform: "uppercase",
-        marginBottom: "0.3rem",
-        fontFamily: "var(--font-mono)",
-      }}>
-        {col.name}
-      </div>
-      <div style={{
-        fontSize: 8,
-        color: "rgba(100,160,240,0.25)",
-        letterSpacing: "0.1em",
-        fontFamily: "var(--font-mono)",
-      }}>
-        {col.status}
-      </div>
-    </div>
+    <span style={{
+      ...mono,
+      display: "inline-block",
+      fontSize: 7,
+      letterSpacing: "0.15em",
+      textTransform: "uppercase",
+      color: isPending ? "rgba(80,160,100,0.18)" : "var(--text-dim)",
+      border: `0.5px ${isPending ? "dashed" : "solid"} ${isPending ? "rgba(80,160,100,0.12)" : "rgba(80,160,100,0.25)"}`,
+      padding: "0.15rem 0.4rem",
+    }}>
+      {status}
+    </span>
   );
 }
 
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
-export default function BlueprintPortfolio() {
+export default function FieldReport() {
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => { setMounted(true); }, []);
 
+  const delays = [0, 60, 120, 180, 240, 300, 360];
+
   return (
-    <div className="bp-root">
-      <div className="bp-grid-bg" />
+    <div className="root">
+      <div className="grid-bg" />
+      <div className="container">
 
-      <div className="bp-container">
+        {/* ── BLOQUE 0 — Encabezado del informe ── */}
+        <div className="fade-in" style={{ animationDelay: `${delays[0]}ms`, marginBottom: "2.5rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem" }}>
 
-        {/* ── STAMP BAR ── */}
-        <div className="bp-fade-in" style={{
-          animationDelay: "0ms",
-          fontSize: 9,
-          letterSpacing: "0.25em",
-          color: "rgba(100,160,240,0.35)",
-          textTransform: "uppercase",
-          marginBottom: "3rem",
-          display: "flex",
-          alignItems: "center",
-          gap: "1.5rem",
-          fontFamily: "var(--font-mono)",
-        }}>
-          <span>drawing no. 001 — rev. ∞ &nbsp;|&nbsp; a working draft of seeing &nbsp;|&nbsp; do not scale</span>
-          <span style={{ flex: 1, height: "0.5px", background: "rgba(100,160,240,0.15)", display: "block" }} />
+            {/* Left: report header */}
+            <div style={{ ...mono, fontSize: 8, letterSpacing: "0.2em", color: "var(--text-faint)", lineHeight: 2.2, textTransform: "uppercase" }}>
+              <div>INFORME TÉCNICO DE CAMPO</div>
+              <div>Proyecto: DB_archives_v2</div>
+              <div>Operador: {AUTHOR.initials}</div>
+              <div>Fecha inicio: {AUTHOR.startYear}</div>
+              <div>Estado: EN PROCESO — NO ESCALAR</div>
+            </div>
+
+            {/* Right: coordinates block */}
+            <div style={{ ...mono, fontSize: 8, letterSpacing: "0.2em", color: "var(--text-faint)", lineHeight: 2.2, textTransform: "uppercase", textAlign: "right", flexShrink: 0 }}>
+              <div>LAT: {AUTHOR.lat || "—"}</div>
+              <div>LON: {AUTHOR.lon || "—"}</div>
+              <div>DATUM: WGS-84</div>
+              <div>HOJA: IGM — sin número asignado</div>
+            </div>
+          </div>
+
+          <div style={{ marginTop: "1.5rem" }}>
+            <DoubleLine />
+          </div>
         </div>
 
-        {/* ── HERO ── */}
-        <div className="bp-fade-in" style={{
-          animationDelay: "80ms",
-          marginBottom: "4rem",
-          borderLeft: "0.5px solid rgba(100,160,240,0.25)",
-          paddingLeft: "1.5rem",
-          position: "relative",
-        }}>
-          <div className="bp-crosshair" style={{ top: -8, left: -24 }} />
+        {/* ── BLOQUE 1 — Resumen ejecutivo ── */}
+        <div className="fade-in" style={{ animationDelay: `${delays[1]}ms`, marginBottom: "2.5rem" }}>
           <p style={{
-            fontSize: 9,
-            letterSpacing: "0.25em",
-            color: "rgba(100,160,240,0.3)",
-            textTransform: "uppercase",
-            marginBottom: "0.5rem",
-            fontFamily: "var(--font-mono)",
-          }}>subject /</p>
-          <h1 style={{
-            fontFamily: "var(--font-serif)",
-            fontStyle: "italic",
-            fontSize: "clamp(2.2rem, 5vw, 3.8rem)",
-            color: "#c8ddf5",
-            lineHeight: 1.1,
-            marginBottom: "0.8rem",
-            letterSpacing: "-0.01em",
-            fontWeight: 400,
-          }}>
-            skeleton<br />photographs
-          </h1>
-          <p style={{
+            ...mono,
             fontSize: 10,
-            letterSpacing: "0.2em",
-            color: "rgba(100,160,240,0.45)",
-            textTransform: "uppercase",
-            fontFamily: "var(--font-mono)",
+            color: "var(--text-dim)",
+            lineHeight: 2,
+            marginBottom: "1rem",
           }}>
-            backbone — not the finished work
+            El presente informe documenta el registro visual acumulado durante campañas de observación de campo en múltiples formaciones y contextos. Las muestras han sido clasificadas por afinidad composicional, no por orden cronológico de extracción.
           </p>
-        </div>
-
-        {/* ── DIMENSION LINE ── */}
-        <div className="bp-fade-in" style={{
-          animationDelay: "160ms",
-          display: "flex",
-          alignItems: "center",
-          marginBottom: "2.5rem",
-        }}>
-          <div style={{ width: "0.5px", height: 12, background: "rgba(100,160,240,0.3)" }} />
-          <div style={{ flex: 1, height: "0.5px", background: "rgba(100,160,240,0.15)" }} />
-          <span style={{
-            fontSize: 8,
-            letterSpacing: "0.15em",
-            color: "rgba(100,160,240,0.25)",
-            padding: "0 0.75rem",
-            textTransform: "uppercase",
-            fontFamily: "var(--font-mono)",
+          <p style={{
+            ...serif,
+            fontSize: 13,
+            color: "rgba(180,210,160,0.50)",
+            lineHeight: 1.7,
+            marginBottom: "1.5rem",
           }}>
-            collections arranged by proximity of feeling
-          </span>
-          <div style={{ flex: 1, height: "0.5px", background: "rgba(100,160,240,0.15)" }} />
-          <div style={{ width: "0.5px", height: 12, background: "rgba(100,160,240,0.3)" }} />
+            lo que se registra aquí no es el paisaje.<br />
+            es la presión que lo formó.
+          </p>
+          <div style={{ width: "100%", height: "0.5px", background: "var(--line)" }} />
         </div>
 
-        {/* ── SECTION LABEL 01 ── */}
-        <div className="bp-fade-in" style={{
-          animationDelay: "200ms",
-          fontSize: 8,
-          letterSpacing: "0.3em",
-          color: "rgba(100,160,240,0.3)",
-          textTransform: "uppercase",
-          marginBottom: "1.2rem",
-          display: "flex",
-          alignItems: "center",
-          gap: "1rem",
-          fontFamily: "var(--font-mono)",
-        }}>
-          <span style={{ color: "rgba(100,160,240,0.2)", fontSize: 7 }}>01 —</span>
-          collections index
+        {/* ── BLOQUE 2 — Tabla de muestras ── */}
+        <div className="fade-in" style={{ animationDelay: `${delays[2]}ms`, marginBottom: "3rem" }}>
+          <div style={{ marginBottom: "1rem" }}>
+            <p style={{ ...mono, fontSize: 8, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--text-faint)", marginBottom: "0.3rem" }}>
+              REGISTRO DE MUESTRAS — CAMPAÑA DB_v2
+            </p>
+            <p style={{ ...mono, fontSize: 8, color: "var(--text-faint)", letterSpacing: "0.1em" }}>
+              n = 6 unidades clasificadas &nbsp;|&nbsp; método: observación directa &nbsp;|&nbsp; clasificación: composicional
+            </p>
+          </div>
+
+          <div style={{ overflowX: "auto" }}>
+            <table className="samples-table">
+              <thead>
+                <tr>
+                  <th style={{ width: "7rem" }}>N° Muestra</th>
+                  <th style={{ width: "7rem" }}>Unidad</th>
+                  <th>Descripción litológica</th>
+                  <th>Observaciones de campo</th>
+                  <th style={{ width: "6rem" }}>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {SAMPLES.map((s) => (
+                  <tr key={s.id}>
+                    <td style={{ ...mono, fontSize: 9, color: "var(--text-dim)", fontWeight: 700 }}>
+                      {s.id}
+                    </td>
+                    <td style={{ ...mono, fontSize: 9, textTransform: "uppercase", color: "var(--text-dim)", letterSpacing: "0.08em" }}>
+                      {s.unit}
+                    </td>
+                    <td style={{ ...mono, fontSize: 9, color: "var(--text-muted)", lineHeight: 1.8 }}>
+                      {s.lithology}
+                    </td>
+                    <td style={{ minWidth: "12rem" }}>
+                      {s.observation !== "—" ? (
+                        <em style={{ ...serif, fontSize: 12, color: "rgba(180,210,160,0.48)" }}>
+                          {s.observation}
+                        </em>
+                      ) : (
+                        <span style={{ ...mono, fontSize: 9, color: "var(--text-faint)" }}>—</span>
+                      )}
+                    </td>
+                    <td>
+                      <StatusBadge status={s.status} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        {/* ── COLLECTIONS GRID ── */}
-        <div className="bp-collections-grid bp-fade-in" style={{ animationDelay: "260ms" }}>
-          {COLLECTIONS.map((col) => (
-            <CollectionCard key={col.id} col={col} />
-          ))}
+        {/* ── BLOQUE 3 — Metodología ── */}
+        <div className="fade-in" style={{ animationDelay: `${delays[3]}ms`, marginBottom: "3rem" }}>
+          <SectionLabel>METODOLOGÍA Y CONDICIONES DE CAMPAÑA</SectionLabel>
+          <div className="method-grid">
+            {[
+              {
+                title: "Equipamiento",
+                items: [
+                  ["Instrumento", "sin especificar"],
+                  ["Resolución", "variable"],
+                  ["Condiciones", "disponibles"],
+                  ["Protocolo", "observación directa"],
+                ],
+              },
+              {
+                title: "Criterios de clasificación",
+                items: [
+                  ["Método", "afinidad composicional"],
+                  ["Escala", "1:∞"],
+                  ["Datum vertical", "sensación"],
+                  ["Referencia", "ninguna externa"],
+                ],
+              },
+              {
+                title: "Limitaciones conocidas",
+                items: [
+                  ["Cobertura", "parcial"],
+                  ["Repetibilidad", "baja"],
+                  ["Sesgo del operador", "confirmado"],
+                  ["Revisión externa", "no realizada"],
+                ],
+              },
+            ].map((col) => (
+              <div key={col.title} style={{ background: "var(--bg-surface)", padding: "1rem" }}>
+                <p style={{ ...mono, fontSize: 7, letterSpacing: "0.25em", textTransform: "uppercase", color: "var(--text-faint)", marginBottom: "0.75rem" }}>
+                  {col.title}
+                </p>
+                {col.items.map(([k, v]) => (
+                  <div key={k} style={{ ...mono, fontSize: 9, color: "var(--text-muted)", lineHeight: 2 }}>
+                    <span style={{ color: "var(--text-faint)" }}>{k}:</span> {v}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* ── NOTES BLOCK ── */}
-        <div className="bp-fade-in" style={{
-          animationDelay: "340ms",
-          border: "0.5px solid rgba(100,160,240,0.1)",
-          padding: "1.25rem 1.5rem",
-          marginBottom: "3rem",
-          position: "relative",
-        }}>
-          <span style={{
-            position: "absolute",
-            top: "-0.5rem",
-            left: "1rem",
-            background: "#0a1628",
-            padding: "0 0.5rem",
-            fontSize: 7,
-            letterSpacing: "0.3em",
-            color: "rgba(100,160,240,0.25)",
-            textTransform: "uppercase",
-            fontFamily: "var(--font-mono)",
-          }}>notes</span>
+        {/* ── BLOQUE 4 — Histograma ── */}
+        <div className="fade-in" style={{ animationDelay: `${delays[4]}ms`, marginBottom: "3rem" }}>
+          <SectionLabel>DISTRIBUCIÓN DE EXPOSICIONES — HISTOGRAMA ACUMULADO</SectionLabel>
+          {mounted && <Histogram />}
+        </div>
 
-          {NOTES.map((note, i) => (
-            <div key={i} style={{
-              fontSize: 10,
-              lineHeight: 2.2,
-              color: "rgba(168,196,232,0.4)",
-              letterSpacing: "0.08em",
-              borderBottom: i < NOTES.length - 1 ? "0.5px solid rgba(100,160,240,0.06)" : undefined,
-              fontFamily: "var(--font-mono)",
-            }}>
-              {note.italic
-                ? <em style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: 12, color: "rgba(168,196,232,0.65)" }}>{note.text}</em>
-                : note.text
-              }
+        {/* ── BLOQUE 5 — Conclusiones preliminares ── */}
+        <div className="fade-in" style={{ animationDelay: `${delays[5]}ms`, marginBottom: "3rem" }}>
+          <SectionLabel>CONCLUSIONES PRELIMINARES — SUJETO A REVISIÓN</SectionLabel>
+
+          {[
+            {
+              num: "01.",
+              text: "Las unidades clasificadas no representan la totalidad del registro. La presente documentación refleja el estado parcial de la campaña.",
+              italic: false,
+            },
+            {
+              num: "02.",
+              text: "La relación entre unidades es composicional, no estratigráfica. El orden de presentación no implica jerarquía ni secuencia temporal.",
+              italic: false,
+            },
+            {
+              num: "03.",
+              text: "el archivo no está terminado.\nnunca lo estará. esa es la condición de trabajo.",
+              italic: true,
+            },
+          ].map((item) => (
+            <div key={item.num} style={{ display: "flex", gap: "1rem", marginBottom: "1.25rem" }}>
+              <span style={{ ...mono, fontSize: 9, color: "var(--text-faint)", flexShrink: 0, paddingTop: item.italic ? 2 : 0 }}>
+                {item.num}
+              </span>
+              {item.italic ? (
+                <em style={{ ...serif, fontSize: 12, color: "rgba(180,210,160,0.48)", lineHeight: 1.8, whiteSpace: "pre-line" }}>
+                  {item.text}
+                </em>
+              ) : (
+                <p style={{ ...mono, fontSize: 9, color: "var(--text-muted)", lineHeight: 2 }}>
+                  {item.text}
+                </p>
+              )}
             </div>
           ))}
         </div>
 
-        {/* ── SCATTER SECTION ── */}
-        <div className="bp-fade-in" style={{ animationDelay: "400ms" }}>
-          <div style={{
-            fontSize: 8,
-            letterSpacing: "0.3em",
-            color: "rgba(100,160,240,0.3)",
-            textTransform: "uppercase",
-            marginBottom: "1.2rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "1rem",
-            fontFamily: "var(--font-mono)",
-          }}>
-            <span style={{ color: "rgba(100,160,240,0.2)", fontSize: 7 }}>02 —</span>
-            scatter — frequency of themes
-          </div>
-          {mounted && <ScatterMap />}
-        </div>
+        {/* ── BLOQUE 6 — Pie de informe ── */}
+        <div className="fade-in" style={{ animationDelay: `${delays[6]}ms` }}>
+          <DoubleLine />
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1.5rem", flexWrap: "wrap" }}>
 
-        {/* ── FOOTER ── */}
-        <div className="bp-fade-in" style={{
-          animationDelay: "460ms",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-end",
-          borderTop: "0.5px solid rgba(100,160,240,0.1)",
-          paddingTop: "1rem",
-          flexWrap: "wrap",
-          gap: "1rem",
-        }}>
-          <div style={{
-            fontSize: 8,
-            letterSpacing: "0.2em",
-            color: "rgba(100,160,240,0.2)",
-            textTransform: "uppercase",
-            lineHeight: 2,
-            fontFamily: "var(--font-mono)",
-          }}>
-            <div>portfolio — draft v∞</div>
-            <div>field: photography</div>
-            <div>status: working draft of seeing</div>
-          </div>
+            {/* Left */}
+            <div style={{ ...mono, fontSize: 7, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--text-faint)", lineHeight: 2.2 }}>
+              <div style={{ fontWeight: 700, fontSize: 8, color: "var(--text-muted)", marginBottom: "0.1rem" }}>DB_archives_v2</div>
+              <div>Operador de campo: {AUTHOR.initials}</div>
+              <div>Revisión: v∞ — sin fecha de cierre</div>
+            </div>
 
-          <div style={{ display: "flex", gap: 1 }}>
-            {[["scale", "1:∞"], ["sheet", "1 / ∞"], ["date", "ongoing"]].map(([label, val]) => (
-              <div key={label} style={{
-                border: "0.5px solid rgba(100,160,240,0.1)",
-                padding: "0.4rem 0.75rem",
-                fontSize: 7,
-                letterSpacing: "0.2em",
-                color: "rgba(100,160,240,0.2)",
-                textTransform: "uppercase",
-                textAlign: "center",
-                fontFamily: "var(--font-mono)",
-              }}>
-                {label}
-                <span style={{
-                  display: "block",
-                  fontSize: 10,
-                  color: "rgba(100,160,240,0.35)",
-                  letterSpacing: "0.1em",
-                  marginTop: 2,
-                  fontFamily: "var(--font-mono)",
-                }}>{val}</span>
-              </div>
-            ))}
+            {/* Center */}
+            <div style={{ ...mono, fontSize: 7, letterSpacing: "0.1em", color: "var(--text-faint)", lineHeight: 2.2, textAlign: "center" }}>
+              <div>Este documento es de carácter preliminar.</div>
+              <div>No reproducir sin autorización del operador.</div>
+              <div>Clasificación: uso interno.</div>
+            </div>
+
+            {/* Right — technical stamp boxes */}
+            <div style={{ display: "flex", gap: 1, flexShrink: 0 }}>
+              {[["ESCALA", "1:∞"], ["HOJA", "1 / ∞"], ["ESTADO", "activo"]].map(([label, val]) => (
+                <div key={label} style={{
+                  border: "0.5px solid rgba(80,160,100,0.12)",
+                  padding: "0.4rem 0.75rem",
+                  textAlign: "center",
+                }}>
+                  <div style={{ ...mono, fontSize: 7, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--text-faint)" }}>
+                    {label}
+                  </div>
+                  <div style={{ ...mono, fontSize: 9, color: "var(--text-muted)", letterSpacing: "0.1em", marginTop: 2 }}>
+                    {val}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
