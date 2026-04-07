@@ -1,32 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 56" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <!-- Dark background fill -->
-  <rect width="32" height="56" fill="#0c1410" rx="2"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Dark background -->
+  <rect width="44" height="100" fill="#0c1410"/>
 
-  <!-- Crystal silhouette — simplified for favicon legibility -->
-  <path
-    d="M16,2
-       L8,11 L3,22 L2,32 L5,42 L10,50 L14,54 L16,56
-       L18,54 L22,50 L27,42 L30,32 L29,22 L24,11 Z"
-    stroke="rgba(140,200,150,0.75)"
-    stroke-width="0.9"
-    fill="rgba(140,200,150,0.06)"
-  />
+  <!-- Outer crystal silhouette: prism with pointed termination top -->
+  <path d="M22,4 L6,33 L5,94 L39,94 L38,33 Z"
+    stroke="rgba(140,200,150,0.75)" stroke-width="1.2"
+    fill="rgba(140,200,150,0.07)"/>
 
-  <!-- Upper left facet line -->
-  <line x1="16" y1="2"  x2="8"  y2="11" stroke="rgba(140,200,150,0.50)" stroke-width="0.7"/>
-  <!-- Upper right facet line -->
-  <line x1="16" y1="2"  x2="24" y2="11" stroke="rgba(140,200,150,0.50)" stroke-width="0.7"/>
+  <!-- Termination facets — left and right inner lines from tip -->
+  <line x1="22" y1="4"  x2="14" y2="33" stroke="rgba(140,200,150,0.55)" stroke-width="0.9"/>
+  <line x1="22" y1="4"  x2="30" y2="33" stroke="rgba(140,200,150,0.55)" stroke-width="0.9"/>
 
-  <!-- Main left cleavage diagonal -->
-  <line x1="3"  y1="22" x2="16" y2="30" stroke="rgba(140,200,150,0.35)" stroke-width="0.6"/>
-  <!-- Main right cleavage diagonal -->
-  <line x1="29" y1="22" x2="16" y2="30" stroke="rgba(140,200,150,0.35)" stroke-width="0.6"/>
+  <!-- Termination base — horizontal plane -->
+  <line x1="6"  y1="33" x2="38" y2="33" stroke="rgba(140,200,150,0.45)" stroke-width="0.8"/>
 
-  <!-- Lower left -->
-  <line x1="16" y1="30" x2="5"  y2="42" stroke="rgba(140,200,150,0.25)" stroke-width="0.5"/>
-  <!-- Lower right -->
-  <line x1="16" y1="30" x2="27" y2="42" stroke="rgba(140,200,150,0.25)" stroke-width="0.5"/>
+  <!-- Inner prism vertical edges -->
+  <line x1="14" y1="33" x2="13" y2="94" stroke="rgba(140,200,150,0.30)" stroke-width="0.7"/>
+  <line x1="30" y1="33" x2="31" y2="94" stroke="rgba(140,200,150,0.30)" stroke-width="0.7"/>
 
-  <!-- Center node -->
-  <circle cx="16" cy="30" r="0.9" fill="rgba(140,200,150,0.55)"/>
+  <!-- Sub-facet detail on termination shoulders -->
+  <line x1="6"  y1="33" x2="14" y2="15" stroke="rgba(140,200,150,0.22)" stroke-width="0.6"/>
+  <line x1="38" y1="33" x2="30" y2="15" stroke="rgba(140,200,150,0.22)" stroke-width="0.6"/>
 </svg>

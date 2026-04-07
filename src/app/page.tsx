@@ -89,58 +89,87 @@ function BlinkingDots() {
   return <span style={{ letterSpacing: "0.05em" }}>{dots}</span>;
 }
 
-// ─── MINERAL CRYSTAL LOGO — uses traced SVG of real crystal photo ──────────────
-function MineralLogo({ size = 88, opacity = 0.75 }: { size?: number; opacity?: number }) {
+// ─── CRYSTAL LOGO — prismatic quartz, inline SVG ──────────────────────────────
+// Inspired by the clean geometric crystal illustrations from reference sheet
+// Shape: hexagonal prism with single upper termination (like ref bottom-section style)
+function MineralLogo({ size = 76, opacity = 0.80 }: { size?: number; opacity?: number }) {
+  const s = (v: number) => `rgba(140,200,150,${v})`;
+  // viewBox: 0 0 44 100
+  // Crystal: prism body from y=32 to y=94, termination from y=2 to y=32
   return (
     <div className="mineral-logo-wrap" style={{ opacity }}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/mineral-logo.svg"
-        alt="DB_archives mineral crystal"
-        width={size}
-        style={{ display: "block" }}
-        aria-hidden
-      />
+      <svg viewBox="0 0 44 100" width={size} aria-hidden fill="none"
+        strokeLinecap="round" strokeLinejoin="round">
+
+        {/* ── Outer crystal silhouette ── */}
+        {/* Termination top-tip → left shoulder → prism left → bottom-left → bottom-right → prism right → right shoulder */}
+        <path
+          d="M22,3 L6,32 L5,94 L39,94 L38,32 Z"
+          stroke={s(0.60)} strokeWidth="0.75"
+          fill={s(0.04)}
+        />
+
+        {/* ── Termination facets (top prism cap) ── */}
+        {/* Inner left facet of termination */}
+        <line x1="22" y1="3"  x2="14" y2="32" stroke={s(0.38)} strokeWidth="0.55"/>
+        {/* Inner right facet of termination */}
+        <line x1="22" y1="3"  x2="30" y2="32" stroke={s(0.38)} strokeWidth="0.55"/>
+        {/* Termination base — horizontal plane separating cap from body */}
+        <line x1="6"  y1="32" x2="38" y2="32" stroke={s(0.30)} strokeWidth="0.5"/>
+
+        {/* ── Prism body — internal vertical edges (showing 3D hex prism) ── */}
+        {/* Left inner vertical edge */}
+        <line x1="14" y1="32" x2="13" y2="94" stroke={s(0.22)} strokeWidth="0.45"/>
+        {/* Right inner vertical edge */}
+        <line x1="30" y1="32" x2="31" y2="94" stroke={s(0.22)} strokeWidth="0.45"/>
+
+        {/* ── Prism face detail — subtle center line ── */}
+        <line x1="22" y1="32" x2="22" y2="94"
+          stroke={s(0.10)} strokeWidth="0.4" strokeDasharray="1.5 4"/>
+
+        {/* ── Bottom prism edge line ── */}
+        <line x1="13" y1="94" x2="31" y2="94" stroke={s(0.20)} strokeWidth="0.4"/>
+
+        {/* ── Sub-facet on left termination face (inner detail) ── */}
+        <line x1="6"  y1="32" x2="14" y2="14" stroke={s(0.16)} strokeWidth="0.4"/>
+        {/* Sub-facet on right termination face */}
+        <line x1="38" y1="32" x2="30" y2="14" stroke={s(0.16)} strokeWidth="0.4"/>
+
+        {/* ── Label ── */}
+        <text x="22" y="106" fontFamily="var(--font-mono)" fontSize="5.2"
+          fill={s(0.45)} textAnchor="middle" letterSpacing="0.14em">
+          DB_archives
+        </text>
+      </svg>
     </div>
   );
 }
 
-// ─── MINERAL LOGO — SMALL inline SVG (next to domain/title in header) ──────────
-// Same crystal silhouette, condensed for inline use at 18-22px height
+// ─── CRYSTAL LOGO SMALL — inline next to title, same prism style ───────────────
 function MineralLogoSmall() {
-  const col = (v: number) => `rgba(140,200,150,${v})`;
+  const s = (v: number) => `rgba(140,200,150,${v})`;
   return (
-    <svg
-      viewBox="0 0 32 56"
-      width={14}
-      height={24}
-      aria-hidden
-      fill="none"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ verticalAlign: "middle", display: "inline-block", marginRight: 5, flexShrink: 0 }}
-    >
-      {/* Outer silhouette */}
-      <path
-        d="M16,1 L8,10 L3,20 L2,30 L5,40 L10,49 L14,54 L16,55 L18,54 L22,49 L27,40 L30,30 L29,20 L24,10 Z"
-        stroke={col(0.70)}
-        strokeWidth="1"
-        fill={col(0.05)}
-      />
-      {/* Upper facets */}
-      <line x1="16" y1="1"  x2="8"  y2="10" stroke={col(0.45)} strokeWidth="0.8"/>
-      <line x1="16" y1="1"  x2="24" y2="10" stroke={col(0.45)} strokeWidth="0.8"/>
-      {/* Main cleavage diagonals */}
-      <line x1="3"  y1="20" x2="16" y2="30" stroke={col(0.32)} strokeWidth="0.7"/>
-      <line x1="29" y1="20" x2="16" y2="30" stroke={col(0.32)} strokeWidth="0.7"/>
-      {/* Lower cleavage */}
-      <line x1="16" y1="30" x2="5"  y2="40" stroke={col(0.22)} strokeWidth="0.55"/>
-      <line x1="16" y1="30" x2="27" y2="40" stroke={col(0.22)} strokeWidth="0.55"/>
-      {/* Center node */}
-      <circle cx="16" cy="30" r="1" fill={col(0.50)}/>
+    <svg viewBox="0 0 22 50" width={11} height={25} aria-hidden fill="none"
+      strokeLinecap="round" strokeLinejoin="round"
+      style={{ verticalAlign: "middle", display: "inline-block", marginRight: 5, flexShrink: 0 }}>
+
+      {/* Outer crystal silhouette */}
+      <path d="M11,2 L3,16 L2,47 L20,47 L19,16 Z"
+        stroke={s(0.70)} strokeWidth="1" fill={s(0.05)}/>
+
+      {/* Termination facets */}
+      <line x1="11" y1="2"  x2="7"  y2="16" stroke={s(0.50)} strokeWidth="0.8"/>
+      <line x1="11" y1="2"  x2="15" y2="16" stroke={s(0.50)} strokeWidth="0.8"/>
+      <line x1="3"  y1="16" x2="19" y2="16" stroke={s(0.38)} strokeWidth="0.6"/>
+
+      {/* Inner prism edges */}
+      <line x1="7"  y1="16" x2="6"  y2="47" stroke={s(0.28)} strokeWidth="0.55"/>
+      <line x1="15" y1="16" x2="16" y2="47" stroke={s(0.28)} strokeWidth="0.55"/>
     </svg>
   );
 }
+
+
 
 // ─── SECTION LABEL ─────────────────────────────────────────────────────────────
 function SectionLabel({ children }: { children: React.ReactNode }) {
