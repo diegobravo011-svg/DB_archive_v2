@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 // ─── EDITABLE DATA ─────────────────────────────────────────────────────────────
 const AUTHOR = {
@@ -43,14 +43,51 @@ const SAMPLES = [
   },
 ];
 
+// ─── COLLECTIONS ────────────────────────────────────────────────────────────────
+// Para agregar fotos: coloca los archivos en /public/collections/DB-XXX/
+// y agrega el nombre del archivo en el array correspondiente.
+// Ejemplo: images: ["DSCF0001.JPG", "DSCF0002.JPG", "foto.jpg"]
+const COLLECTIONS: Record<string, { images: string[] }> = {
+  "DB-001": {
+    images: [
+      // Agrega aquí los nombres de archivo de las fotos de "luz disponible"
+      // Ejemplo: "foto01.jpg"
+    ],
+  },
+  "DB-002": {
+    images: [
+      // Agrega aquí los nombres de archivo de las fotos de "interiores"
+    ],
+  },
+  "DB-003": {
+    images: [
+      // Agrega aquí los nombres de archivo de las fotos de "tránsito"
+    ],
+  },
+  "DB-004": {
+    images: [
+      // Agrega aquí los nombres de archivo de las fotos de "figuras"
+    ],
+  },
+  "DB-005": {
+    images: [
+      // Agrega aquí los nombres de archivo de las fotos de "horizonte"
+    ],
+  },
+  "DB-006": {
+    images: [
+      // Agrega aquí los nombres de archivo de las fotos de "[sin clasificar]"
+    ],
+  },
+};
+
 // ─── WEEKLY ACTIVITY — 1 = semana con fotos, 0 = sin registro ──────────────────
-// Índice 0 = W01 (5 ene 2026) ... Índice 19 = W20 (11 may 2026)
 const ACTIVE_WEEKS: number[] = [
-  0, 0, 0, 0, 0,   // W01–W05 ENE
-  0, 0, 0, 0,      // W06–W09 FEB
-  0, 0, 0, 0, 0,   // W10–W14 MAR
-  1, 0, 0, 0,      // W15–W18 ABR
-  0, 0,            // W19–W20 MAY
+  0, 0, 0, 0, 0,
+  0, 0, 0, 0,
+  0, 0, 0, 0, 0,
+  1, 0, 0, 0,
+  0, 0,
 ];
 
 const WEEKS_2026 = [
@@ -85,45 +122,33 @@ function HddLogo() {
   return (
     <div className="hdd-logo-wrap">
       <svg viewBox="0 0 100 90" width={88} aria-hidden>
-        {/* Back casing */}
         <rect x="21" y="5" width="72" height="58" rx="5" fill="none"
           stroke="rgba(140,200,150,0.10)" strokeWidth="0.5" />
-        {/* Mid casing */}
         <rect x="14" y="12" width="72" height="58" rx="5"
           fill="rgba(12,20,16,0.85)" stroke="rgba(140,200,150,0.22)" strokeWidth="0.5" />
-        {/* Front casing */}
         <rect x="7" y="19" width="72" height="58" rx="5"
           fill="rgba(12,20,16,0.97)" stroke="rgba(140,200,150,0.55)" strokeWidth="0.5" />
-        {/* Platter outer */}
         <circle cx="37" cy="48" r="20" fill="none"
           stroke="rgba(140,200,150,0.35)" strokeWidth="0.5" />
-        {/* Data track dashed */}
         <circle cx="37" cy="48" r="16" fill="none"
           stroke="rgba(140,200,150,0.15)" strokeWidth="0.4" strokeDasharray="2 3" />
-        {/* Platter inner */}
         <circle cx="37" cy="48" r="11" fill="none"
           stroke="rgba(140,200,150,0.22)" strokeWidth="0.5" />
-        {/* Spindle */}
         <circle cx="37" cy="48" r="3.5" fill="rgba(140,200,150,0.25)" />
-        {/* Read/write arm */}
         <line x1="37" y1="29" x2="70" y2="40"
           stroke="rgba(140,200,150,0.55)" strokeWidth="0.6" />
         <circle cx="70" cy="40" r="2.5" fill="none"
           stroke="rgba(140,200,150,0.55)" strokeWidth="0.5" />
-        {/* Corner screws */}
         {[[14,26],[72,26],[14,70],[72,70]].map(([x,y],i) => (
           <circle key={i} cx={x} cy={y} r="1.5" fill="none"
             stroke="rgba(140,200,150,0.22)" strokeWidth="0.5" />
         ))}
-        {/* Data ports */}
         <rect x="70" y="56" width="7" height="2.5" rx="0.5" fill="none"
           stroke="rgba(140,200,150,0.25)" strokeWidth="0.5" />
         <rect x="70" y="61" width="7" height="2.5" rx="0.5" fill="none"
           stroke="rgba(140,200,150,0.25)" strokeWidth="0.5" />
-        {/* Label sticker */}
         <rect x="52" y="28" width="18" height="12" rx="1" fill="none"
           stroke="rgba(140,200,150,0.18)" strokeWidth="0.4" strokeDasharray="2 2" />
-        {/* Text inside SVG */}
         <text x="43" y="83" fontFamily="var(--font-mono)" fontSize="7"
           fill="rgba(140,200,150,0.70)" textAnchor="middle" letterSpacing="0.08em">
           DB_archives_V2
@@ -164,7 +189,6 @@ function WeekHistogram() {
   const rows = 8;
   return (
     <div style={{ marginBottom: "3rem" }}>
-      {/* Month labels */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(20,1fr)", gap: 2, marginBottom: 2 }}>
         {WEEKS_2026.map((w, i) => (
           <div key={i} style={{ ...mono, fontSize: 6, color: w.ms ? "var(--text-muted)" : "transparent",
@@ -174,7 +198,6 @@ function WeekHistogram() {
           </div>
         ))}
       </div>
-      {/* Week labels */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(20,1fr)", gap: 2, marginBottom: 3 }}>
         {WEEKS_2026.map((w, i) => (
           <div key={i} style={{ ...mono, fontSize: 5, color: "var(--text-faint)",
@@ -183,7 +206,6 @@ function WeekHistogram() {
           </div>
         ))}
       </div>
-      {/* Grid cells */}
       {Array.from({ length: rows }).map((_, r) => (
         <div key={r} style={{ display: "grid", gridTemplateColumns: "repeat(20,1fr)", gap: 2, marginBottom: 2 }}>
           {WEEKS_2026.map((_, c) => {
@@ -224,11 +246,267 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+// ─── EMPTY COLLECTION PLACEHOLDER ──────────────────────────────────────────────
+function EmptyCollection({ sampleId, unit }: { sampleId: string; unit: string }) {
+  return (
+    <div style={{
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+      minHeight: "40vh", gap: "1.5rem", padding: "3rem 1rem",
+    }}>
+      {/* Grid icon placeholder */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 6, opacity: 0.25 }}>
+        {Array.from({ length: 9 }).map((_, i) => (
+          <div key={i} style={{
+            width: 48, height: 48,
+            border: "0.5px solid rgba(140,200,150,0.40)",
+            background: "rgba(140,200,150,0.03)",
+          }} />
+        ))}
+      </div>
+      <div style={{ textAlign: "center" }}>
+        <p style={{ ...mono, fontSize: 9, letterSpacing: "0.15em", color: "var(--text-faint)",
+          textTransform: "uppercase", marginBottom: "0.5rem" }}>
+          Colección vacía — {sampleId}
+        </p>
+        <p style={{ ...mono, fontSize: 8, color: "var(--text-faint)", letterSpacing: "0.08em" }}>
+          Agrega imágenes en{" "}
+          <span style={{ color: "var(--text-dim)" }}>
+            /public/collections/{sampleId}/
+          </span>
+        </p>
+        <p style={{ ...mono, fontSize: 8, color: "var(--text-faint)", marginTop: "0.35rem", letterSpacing: "0.05em" }}>
+          y registra los nombres de archivo en{" "}
+          <span style={{ color: "var(--text-dim)" }}>COLLECTIONS</span>{" "}
+          dentro de <span style={{ color: "var(--text-dim)" }}>page.tsx</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── LIGHTBOX ──────────────────────────────────────────────────────────────────
+function Lightbox({
+  images, index, sampleId, onClose, onPrev, onNext,
+}: {
+  images: string[];
+  index: number;
+  sampleId: string;
+  onClose: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  const src = `/collections/${sampleId}/${images[index]}`;
+  const hasPrev = index > 0;
+  const hasNext = index < images.length - 1;
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowLeft" && hasPrev) onPrev();
+      if (e.key === "ArrowRight" && hasNext) onNext();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose, onPrev, onNext, hasPrev, hasNext]);
+
+  return (
+    <div className="lightbox-overlay" onClick={onClose}>
+      {/* Counter */}
+      <div className="lightbox-counter" onClick={e => e.stopPropagation()}>
+        <span style={{ ...mono, fontSize: 8, color: "var(--text-faint)", letterSpacing: "0.15em" }}>
+          {String(index + 1).padStart(2, "0")} / {String(images.length).padStart(2, "0")}
+        </span>
+      </div>
+
+      {/* Prev button */}
+      {hasPrev && (
+        <button className="lightbox-nav lightbox-nav--prev"
+          onClick={e => { e.stopPropagation(); onPrev(); }}
+          aria-label="Anterior">
+          ←
+        </button>
+      )}
+
+      {/* Image */}
+      <div className="lightbox-img-wrap" onClick={e => e.stopPropagation()}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={`${sampleId} — ${images[index]}`}
+          className="lightbox-img"
+        />
+        <p style={{ ...mono, fontSize: 7, color: "var(--text-faint)", marginTop: "0.75rem",
+          letterSpacing: "0.12em", textAlign: "center" }}>
+          {images[index]}
+        </p>
+      </div>
+
+      {/* Next button */}
+      {hasNext && (
+        <button className="lightbox-nav lightbox-nav--next"
+          onClick={e => { e.stopPropagation(); onNext(); }}
+          aria-label="Siguiente">
+          →
+        </button>
+      )}
+
+      {/* Close hint */}
+      <div className="lightbox-close-hint">
+        <span style={{ ...mono, fontSize: 7, color: "var(--text-faint)", letterSpacing: "0.15em" }}>
+          ESC — CERRAR &nbsp;|&nbsp; ← → NAVEGAR
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// ─── COLLECTION VIEW ───────────────────────────────────────────────────────────
+function CollectionView({
+  sample,
+  onBack,
+}: {
+  sample: typeof SAMPLES[0];
+  onBack: () => void;
+}) {
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const collection = COLLECTIONS[sample.id];
+  const images = collection?.images ?? [];
+
+  const openLightbox = (i: number) => setLightboxIndex(i);
+  const closeLightbox = () => setLightboxIndex(null);
+  const prevImage = useCallback(() =>
+    setLightboxIndex(i => (i !== null && i > 0 ? i - 1 : i)), []);
+  const nextImage = useCallback(() =>
+    setLightboxIndex(i => (i !== null && i < images.length - 1 ? i + 1 : i)), [images.length]);
+
+  return (
+    <div className="root">
+      <div className="grid-bg" />
+      <div className="container collection-container">
+
+        {/* ── Encabezado de colección ── */}
+        <div className="collection-header fade-in">
+          <button className="back-btn" onClick={onBack}>
+            ← VOLVER AL INFORME
+          </button>
+
+          <div style={{ marginTop: "1.5rem" }}>
+            <DoubleLine />
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "space-between",
+            alignItems: "flex-end", flexWrap: "wrap", gap: "0.5rem",
+            marginBottom: "0.5rem" }}>
+            <div>
+              <p style={{ ...mono, fontSize: 7, letterSpacing: "0.3em",
+                textTransform: "uppercase", color: "var(--text-faint)", marginBottom: "0.35rem" }}>
+                COLECCIÓN — {sample.id}
+              </p>
+              <h1 style={{ ...mono, fontSize: 14, letterSpacing: "0.15em",
+                textTransform: "uppercase", color: "var(--text-dim)", fontWeight: 700 }}>
+                {sample.unit}
+              </h1>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <p style={{ ...mono, fontSize: 7, color: "var(--text-faint)", letterSpacing: "0.12em" }}>
+                N° DE REGISTROS: {images.length}
+              </p>
+              <p style={{ ...mono, fontSize: 7, color: "var(--text-faint)", letterSpacing: "0.12em" }}>
+                ESTADO: <span style={{ color: "var(--text-dim)", textTransform: "uppercase" }}>{sample.status}</span>
+              </p>
+            </div>
+          </div>
+
+          {sample.observation !== "—" && (
+            <em style={{ ...serif, fontSize: 12, color: "#9ec49a", display: "block",
+              marginBottom: "0.5rem" }}>
+              {sample.observation}
+            </em>
+          )}
+
+          <div style={{ width: "100%", height: "0.5px", background: "var(--line)", marginBottom: "2rem" }} />
+        </div>
+
+        {/* ── Galería ── */}
+        {images.length === 0 ? (
+          <EmptyCollection sampleId={sample.id} unit={sample.unit} />
+        ) : (
+          <div className="photo-grid">
+            {images.map((img, i) => (
+              <button
+                key={img}
+                className="photo-thumb"
+                onClick={() => openLightbox(i)}
+                aria-label={`Ver foto ${i + 1}`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`/collections/${sample.id}/${img}`}
+                  alt={`${sample.id} — ${img}`}
+                  className="photo-thumb-img"
+                  loading="lazy"
+                />
+                <div className="photo-thumb-overlay">
+                  <span style={{ ...mono, fontSize: 7, color: "rgba(140,200,150,0.80)",
+                    letterSpacing: "0.12em" }}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* ── Pie ── */}
+        <div style={{ marginTop: "3rem" }}>
+          <DoubleLine />
+          <div style={{ display: "flex", justifyContent: "space-between",
+            flexWrap: "wrap", gap: "0.5rem" }}>
+            <span style={{ ...mono, fontSize: 7, color: "var(--text-faint)", letterSpacing: "0.2em" }}>
+              DB_ARCHIVES_V2 — {sample.id}
+            </span>
+            <button className="back-btn" onClick={onBack}>
+              ← VOLVER AL INFORME
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Lightbox */}
+      {lightboxIndex !== null && (
+        <Lightbox
+          images={images}
+          index={lightboxIndex}
+          sampleId={sample.id}
+          onClose={closeLightbox}
+          onPrev={prevImage}
+          onNext={nextImage}
+        />
+      )}
+    </div>
+  );
+}
+
 // ─── MAIN PAGE ─────────────────────────────────────────────────────────────────
 export default function FieldReport() {
   const [mounted, setMounted] = useState(false);
+  const [activeCollection, setActiveCollection] = useState<string | null>(null);
   useEffect(() => { setMounted(true); }, []);
   const D = [0, 60, 120, 180, 240, 300, 360];
+
+  const activeSample = SAMPLES.find(s => s.id === activeCollection) ?? null;
+
+  // Show collection view
+  if (activeSample) {
+    return (
+      <CollectionView
+        sample={activeSample}
+        onBack={() => setActiveCollection(null)}
+      />
+    );
+  }
 
   return (
     <div className="root">
@@ -295,6 +573,10 @@ export default function FieldReport() {
               método: Observación-Obturador-Procesamiento de las imágenes &nbsp;|&nbsp;
               clasificación: Raw_data
             </p>
+            <p style={{ ...mono, fontSize: 7, color: "var(--text-faint)", letterSpacing: "0.08em",
+              marginTop: "0.4rem", opacity: 0.7 }}>
+              → Selecciona una muestra para acceder a su colección fotográfica
+            </p>
           </div>
           <div style={{ overflowX: "auto" }}>
             <table className="samples-table">
@@ -305,11 +587,20 @@ export default function FieldReport() {
                   <th>Descripción</th>
                   <th>Observaciones de campo</th>
                   <th style={{ width: "6rem" }}>Estado</th>
+                  <th style={{ width: "2.5rem" }}></th>
                 </tr>
               </thead>
               <tbody>
                 {SAMPLES.map((s) => (
-                  <tr key={s.id}>
+                  <tr
+                    key={s.id}
+                    className="sample-row"
+                    onClick={() => setActiveCollection(s.id)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Abrir colección ${s.id} — ${s.unit}`}
+                    onKeyDown={e => { if (e.key === "Enter" || e.key === " ") setActiveCollection(s.id); }}
+                  >
                     <td style={{ ...mono, fontSize: 9, color: "var(--text-dim)", fontWeight: 700 }}>
                       {s.id}
                     </td>
@@ -327,6 +618,10 @@ export default function FieldReport() {
                       }
                     </td>
                     <td><StatusBadge status={s.status} /></td>
+                    <td style={{ ...mono, fontSize: 10, color: "var(--text-faint)",
+                      textAlign: "center", letterSpacing: 0 }}>
+                      →
+                    </td>
                   </tr>
                 ))}
               </tbody>
