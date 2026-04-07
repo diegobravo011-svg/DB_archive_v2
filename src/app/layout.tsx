@@ -22,6 +22,12 @@ export const metadata: Metadata = {
   title: "DB_archives_v2",
   description:
     "Informe técnico de campo. Registro visual acumulado durante campañas de observación. Estado: en proceso.",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico" },
+    ],
+  },
 };
 
 export default function RootLayout({

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Outer crystal silhouette — traced from bipyramidal mineral photo -->
+  <!-- Shape: pointed top, wide shoulders, mid-body, tapered bottom -->
+  <path
+    d="M30,2
+       L16,18 L6,36 L4,54 L10,70 L18,84 L24,94 L30,98
+       L36,94 L42,84 L50,70 L56,54 L54,36 L44,18 Z"
+    stroke="rgba(140,200,150,0.60)"
+    stroke-width="0.7"
+    fill="rgba(140,200,150,0.03)"
+  />
+
+  <!-- Upper left main facet — from top tip to left shoulder -->
+  <line x1="30" y1="2"  x2="16" y2="18" stroke="rgba(140,200,150,0.40)" stroke-width="0.55"/>
+  <!-- Upper right main facet -->
+  <line x1="30" y1="2"  x2="44" y2="18" stroke="rgba(140,200,150,0.40)" stroke-width="0.55"/>
+
+  <!-- Left shoulder to mid-center — main cleavage diagonal -->
+  <line x1="6"  y1="36" x2="30" y2="52" stroke="rgba(140,200,150,0.30)" stroke-width="0.5"/>
+  <!-- Right shoulder to mid-center -->
+  <line x1="54" y1="36" x2="30" y2="52" stroke="rgba(140,200,150,0.30)" stroke-width="0.5"/>
+
+  <!-- Sub-cleavage: upper-left zone -->
+  <line x1="16" y1="18" x2="6"  y2="36" stroke="rgba(140,200,150,0.22)" stroke-width="0.4"/>
+  <!-- Sub-cleavage: upper-right zone -->
+  <line x1="44" y1="18" x2="54" y2="36" stroke="rgba(140,200,150,0.22)" stroke-width="0.4"/>
+
+  <!-- Horizontal plane — separating upper/lower crystal body -->
+  <line x1="7"  y1="50" x2="53" y2="50" stroke="rgba(140,200,150,0.14)" stroke-width="0.4" stroke-dasharray="1.8 2.5"/>
+
+  <!-- Lower body cleavage — left -->
+  <line x1="30" y1="52" x2="10" y2="70" stroke="rgba(140,200,150,0.22)" stroke-width="0.45"/>
+  <!-- Lower body cleavage — right -->
+  <line x1="30" y1="52" x2="50" y2="70" stroke="rgba(140,200,150,0.22)" stroke-width="0.45"/>
+
+  <!-- Bottom section facets -->
+  <line x1="10" y1="70" x2="24" y2="88" stroke="rgba(140,200,150,0.18)" stroke-width="0.4"/>
+  <line x1="50" y1="70" x2="36" y2="88" stroke="rgba(140,200,150,0.18)" stroke-width="0.4"/>
+
+  <!-- Internal secondary cleavage — mid-upper zone cross-diagonal -->
+  <line x1="16" y1="18" x2="30" y2="36" stroke="rgba(140,200,150,0.16)" stroke-width="0.35"/>
+  <line x1="44" y1="18" x2="30" y2="36" stroke="rgba(140,200,150,0.16)" stroke-width="0.35"/>
+
+  <!-- Spindle node at crystal mid-center -->
+  <circle cx="30" cy="52" r="1.2" fill="rgba(140,200,150,0.35)"/>
+
+  <!-- Label -->
+  <text x="30" y="112" font-family="Space Mono, monospace" font-size="5.5"
+    fill="rgba(140,200,150,0.55)" text-anchor="middle" letter-spacing="0.12em">
+    DB_archives
+  </text>
+</svg>

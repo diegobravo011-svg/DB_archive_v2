@@ -44,44 +44,16 @@ const SAMPLES = [
 ];
 
 // ─── COLLECTIONS ────────────────────────────────────────────────────────────────
-// Para agregar fotos: coloca los archivos en /public/collections/DB-XXX/
-// y agrega el nombre del archivo en el array correspondiente.
-// Ejemplo: images: ["DSCF0001.JPG", "DSCF0002.JPG", "foto.jpg"]
 const COLLECTIONS: Record<string, { images: string[] }> = {
-  "DB-001": {
-    images: [
-      // Agrega aquí los nombres de archivo de las fotos de "luz disponible"
-      // Ejemplo: "foto01.jpg"
-    ],
-  },
-  "DB-002": {
-    images: [
-      // Agrega aquí los nombres de archivo de las fotos de "interiores"
-    ],
-  },
-  "DB-003": {
-    images: [
-      // Agrega aquí los nombres de archivo de las fotos de "tránsito"
-    ],
-  },
-  "DB-004": {
-    images: [
-      // Agrega aquí los nombres de archivo de las fotos de "figuras"
-    ],
-  },
-  "DB-005": {
-    images: [
-      // Agrega aquí los nombres de archivo de las fotos de "horizonte"
-    ],
-  },
-  "DB-006": {
-    images: [
-      // Agrega aquí los nombres de archivo de las fotos de "[sin clasificar]"
-    ],
-  },
+  "DB-001": { images: [] },
+  "DB-002": { images: [] },
+  "DB-003": { images: [] },
+  "DB-004": { images: [] },
+  "DB-005": { images: [] },
+  "DB-006": { images: [] },
 };
 
-// ─── WEEKLY ACTIVITY — 1 = semana con fotos, 0 = sin registro ──────────────────
+// ─── WEEKLY ACTIVITY ───────────────────────────────────────────────────────────
 const ACTIVE_WEEKS: number[] = [
   0, 0, 0, 0, 0,
   0, 0, 0, 0,
@@ -117,48 +89,56 @@ function BlinkingDots() {
   return <span style={{ letterSpacing: "0.05em" }}>{dots}</span>;
 }
 
-// ─── HDD LOGO SVG ──────────────────────────────────────────────────────────────
-function HddLogo() {
+// ─── MINERAL CRYSTAL LOGO — uses traced SVG of real crystal photo ──────────────
+function MineralLogo({ size = 88, opacity = 0.75 }: { size?: number; opacity?: number }) {
   return (
-    <div className="hdd-logo-wrap">
-      <svg viewBox="0 0 100 90" width={88} aria-hidden>
-        <rect x="21" y="5" width="72" height="58" rx="5" fill="none"
-          stroke="rgba(140,200,150,0.10)" strokeWidth="0.5" />
-        <rect x="14" y="12" width="72" height="58" rx="5"
-          fill="rgba(12,20,16,0.85)" stroke="rgba(140,200,150,0.22)" strokeWidth="0.5" />
-        <rect x="7" y="19" width="72" height="58" rx="5"
-          fill="rgba(12,20,16,0.97)" stroke="rgba(140,200,150,0.55)" strokeWidth="0.5" />
-        <circle cx="37" cy="48" r="20" fill="none"
-          stroke="rgba(140,200,150,0.35)" strokeWidth="0.5" />
-        <circle cx="37" cy="48" r="16" fill="none"
-          stroke="rgba(140,200,150,0.15)" strokeWidth="0.4" strokeDasharray="2 3" />
-        <circle cx="37" cy="48" r="11" fill="none"
-          stroke="rgba(140,200,150,0.22)" strokeWidth="0.5" />
-        <circle cx="37" cy="48" r="3.5" fill="rgba(140,200,150,0.25)" />
-        <line x1="37" y1="29" x2="70" y2="40"
-          stroke="rgba(140,200,150,0.55)" strokeWidth="0.6" />
-        <circle cx="70" cy="40" r="2.5" fill="none"
-          stroke="rgba(140,200,150,0.55)" strokeWidth="0.5" />
-        {[[14,26],[72,26],[14,70],[72,70]].map(([x,y],i) => (
-          <circle key={i} cx={x} cy={y} r="1.5" fill="none"
-            stroke="rgba(140,200,150,0.22)" strokeWidth="0.5" />
-        ))}
-        <rect x="70" y="56" width="7" height="2.5" rx="0.5" fill="none"
-          stroke="rgba(140,200,150,0.25)" strokeWidth="0.5" />
-        <rect x="70" y="61" width="7" height="2.5" rx="0.5" fill="none"
-          stroke="rgba(140,200,150,0.25)" strokeWidth="0.5" />
-        <rect x="52" y="28" width="18" height="12" rx="1" fill="none"
-          stroke="rgba(140,200,150,0.18)" strokeWidth="0.4" strokeDasharray="2 2" />
-        <text x="43" y="83" fontFamily="var(--font-mono)" fontSize="7"
-          fill="rgba(140,200,150,0.70)" textAnchor="middle" letterSpacing="0.08em">
-          DB_archives_V2
-        </text>
-        <text x="43" y="91" fontFamily="var(--font-mono)" fontSize="5"
-          fill="rgba(140,200,150,0.40)" textAnchor="middle" letterSpacing="0.06em">
-          Diego Bravo Nilo
-        </text>
-      </svg>
+    <div className="mineral-logo-wrap" style={{ opacity }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/mineral-logo.svg"
+        alt="DB_archives mineral crystal"
+        width={size}
+        style={{ display: "block" }}
+        aria-hidden
+      />
     </div>
+  );
+}
+
+// ─── MINERAL LOGO — SMALL inline SVG (next to domain/title in header) ──────────
+// Same crystal silhouette, condensed for inline use at 18-22px height
+function MineralLogoSmall() {
+  const col = (v: number) => `rgba(140,200,150,${v})`;
+  return (
+    <svg
+      viewBox="0 0 32 56"
+      width={14}
+      height={24}
+      aria-hidden
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ verticalAlign: "middle", display: "inline-block", marginRight: 5, flexShrink: 0 }}
+    >
+      {/* Outer silhouette */}
+      <path
+        d="M16,1 L8,10 L3,20 L2,30 L5,40 L10,49 L14,54 L16,55 L18,54 L22,49 L27,40 L30,30 L29,20 L24,10 Z"
+        stroke={col(0.70)}
+        strokeWidth="1"
+        fill={col(0.05)}
+      />
+      {/* Upper facets */}
+      <line x1="16" y1="1"  x2="8"  y2="10" stroke={col(0.45)} strokeWidth="0.8"/>
+      <line x1="16" y1="1"  x2="24" y2="10" stroke={col(0.45)} strokeWidth="0.8"/>
+      {/* Main cleavage diagonals */}
+      <line x1="3"  y1="20" x2="16" y2="30" stroke={col(0.32)} strokeWidth="0.7"/>
+      <line x1="29" y1="20" x2="16" y2="30" stroke={col(0.32)} strokeWidth="0.7"/>
+      {/* Lower cleavage */}
+      <line x1="16" y1="30" x2="5"  y2="40" stroke={col(0.22)} strokeWidth="0.55"/>
+      <line x1="16" y1="30" x2="27" y2="40" stroke={col(0.22)} strokeWidth="0.55"/>
+      {/* Center node */}
+      <circle cx="16" cy="30" r="1" fill={col(0.50)}/>
+    </svg>
   );
 }
 
@@ -227,7 +207,7 @@ function WeekHistogram() {
         </div>
       ))}
       <p style={{ ...mono, fontSize: 7, letterSpacing: "0.12em", color: "var(--text-faint)", marginTop: "0.5rem" }}>
-        ■ exposición registrada &nbsp;&nbsp; □ sin registro &nbsp;&nbsp; n total: variable &nbsp;&nbsp; intervalo: semanal
+        ■ exposición registrada &nbsp;&nbsp; □ sin registro
       </p>
     </div>
   );
@@ -247,20 +227,17 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 // ─── EMPTY COLLECTION PLACEHOLDER ──────────────────────────────────────────────
-function EmptyCollection({ sampleId, unit }: { sampleId: string; unit: string }) {
+function EmptyCollection({ sampleId }: { sampleId: string }) {
   return (
     <div style={{
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
       minHeight: "40vh", gap: "1.5rem", padding: "3rem 1rem",
     }}>
-      {/* Grid icon placeholder */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 6, opacity: 0.25 }}>
         {Array.from({ length: 9 }).map((_, i) => (
-          <div key={i} style={{
-            width: 48, height: 48,
+          <div key={i} style={{ width: 48, height: 48,
             border: "0.5px solid rgba(140,200,150,0.40)",
-            background: "rgba(140,200,150,0.03)",
-          }} />
+            background: "rgba(140,200,150,0.03)" }} />
         ))}
       </div>
       <div style={{ textAlign: "center" }}>
@@ -270,14 +247,10 @@ function EmptyCollection({ sampleId, unit }: { sampleId: string; unit: string })
         </p>
         <p style={{ ...mono, fontSize: 8, color: "var(--text-faint)", letterSpacing: "0.08em" }}>
           Agrega imágenes en{" "}
-          <span style={{ color: "var(--text-dim)" }}>
-            /public/collections/{sampleId}/
-          </span>
+          <span style={{ color: "var(--text-dim)" }}>/public/collections/{sampleId}/</span>
         </p>
         <p style={{ ...mono, fontSize: 8, color: "var(--text-faint)", marginTop: "0.35rem", letterSpacing: "0.05em" }}>
-          y registra los nombres de archivo en{" "}
-          <span style={{ color: "var(--text-dim)" }}>COLLECTIONS</span>{" "}
-          dentro de <span style={{ color: "var(--text-dim)" }}>page.tsx</span>
+          y registra los nombres en <span style={{ color: "var(--text-dim)" }}>COLLECTIONS</span> en page.tsx
         </p>
       </div>
     </div>
@@ -285,21 +258,14 @@ function EmptyCollection({ sampleId, unit }: { sampleId: string; unit: string })
 }
 
 // ─── LIGHTBOX ──────────────────────────────────────────────────────────────────
-function Lightbox({
-  images, index, sampleId, onClose, onPrev, onNext,
-}: {
-  images: string[];
-  index: number;
-  sampleId: string;
-  onClose: () => void;
-  onPrev: () => void;
-  onNext: () => void;
+function Lightbox({ images, index, sampleId, onClose, onPrev, onNext }: {
+  images: string[]; index: number; sampleId: string;
+  onClose: () => void; onPrev: () => void; onNext: () => void;
 }) {
   const src = `/collections/${sampleId}/${images[index]}`;
   const hasPrev = index > 0;
   const hasNext = index < images.length - 1;
 
-  // Keyboard navigation
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -312,46 +278,27 @@ function Lightbox({
 
   return (
     <div className="lightbox-overlay" onClick={onClose}>
-      {/* Counter */}
       <div className="lightbox-counter" onClick={e => e.stopPropagation()}>
         <span style={{ ...mono, fontSize: 8, color: "var(--text-faint)", letterSpacing: "0.15em" }}>
           {String(index + 1).padStart(2, "0")} / {String(images.length).padStart(2, "0")}
         </span>
       </div>
-
-      {/* Prev button */}
       {hasPrev && (
         <button className="lightbox-nav lightbox-nav--prev"
-          onClick={e => { e.stopPropagation(); onPrev(); }}
-          aria-label="Anterior">
-          ←
-        </button>
+          onClick={e => { e.stopPropagation(); onPrev(); }} aria-label="Anterior">←</button>
       )}
-
-      {/* Image */}
       <div className="lightbox-img-wrap" onClick={e => e.stopPropagation()}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={src}
-          alt={`${sampleId} — ${images[index]}`}
-          className="lightbox-img"
-        />
+        <img src={src} alt={`${sampleId} — ${images[index]}`} className="lightbox-img" />
         <p style={{ ...mono, fontSize: 7, color: "var(--text-faint)", marginTop: "0.75rem",
           letterSpacing: "0.12em", textAlign: "center" }}>
           {images[index]}
         </p>
       </div>
-
-      {/* Next button */}
       {hasNext && (
         <button className="lightbox-nav lightbox-nav--next"
-          onClick={e => { e.stopPropagation(); onNext(); }}
-          aria-label="Siguiente">
-          →
-        </button>
+          onClick={e => { e.stopPropagation(); onNext(); }} aria-label="Siguiente">→</button>
       )}
-
-      {/* Close hint */}
       <div className="lightbox-close-hint">
         <span style={{ ...mono, fontSize: 7, color: "var(--text-faint)", letterSpacing: "0.15em" }}>
           ESC — CERRAR &nbsp;|&nbsp; ← → NAVEGAR
@@ -362,18 +309,10 @@ function Lightbox({
 }
 
 // ─── COLLECTION VIEW ───────────────────────────────────────────────────────────
-function CollectionView({
-  sample,
-  onBack,
-}: {
-  sample: typeof SAMPLES[0];
-  onBack: () => void;
-}) {
+function CollectionView({ sample, onBack }: { sample: typeof SAMPLES[0]; onBack: () => void }) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const collection = COLLECTIONS[sample.id];
-  const images = collection?.images ?? [];
+  const images = COLLECTIONS[sample.id]?.images ?? [];
 
-  const openLightbox = (i: number) => setLightboxIndex(i);
   const closeLightbox = () => setLightboxIndex(null);
   const prevImage = useCallback(() =>
     setLightboxIndex(i => (i !== null && i > 0 ? i - 1 : i)), []);
@@ -385,19 +324,12 @@ function CollectionView({
       <div className="grid-bg" />
       <div className="container collection-container">
 
-        {/* ── Encabezado de colección ── */}
         <div className="collection-header fade-in">
-          <button className="back-btn" onClick={onBack}>
-            ← VOLVER AL INFORME
-          </button>
-
-          <div style={{ marginTop: "1.5rem" }}>
-            <DoubleLine />
-          </div>
+          <button className="back-btn" onClick={onBack}>← VOLVER AL INFORME</button>
+          <div style={{ marginTop: "1.5rem" }}><DoubleLine /></div>
 
           <div style={{ display: "flex", justifyContent: "space-between",
-            alignItems: "flex-end", flexWrap: "wrap", gap: "0.5rem",
-            marginBottom: "0.5rem" }}>
+            alignItems: "flex-end", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.5rem" }}>
             <div>
               <p style={{ ...mono, fontSize: 7, letterSpacing: "0.3em",
                 textTransform: "uppercase", color: "var(--text-faint)", marginBottom: "0.35rem" }}>
@@ -419,71 +351,47 @@ function CollectionView({
           </div>
 
           {sample.observation !== "—" && (
-            <em style={{ ...serif, fontSize: 12, color: "#9ec49a", display: "block",
-              marginBottom: "0.5rem" }}>
+            <em style={{ ...serif, fontSize: 12, color: "#9ec49a", display: "block", marginBottom: "0.5rem" }}>
               {sample.observation}
             </em>
           )}
-
           <div style={{ width: "100%", height: "0.5px", background: "var(--line)", marginBottom: "2rem" }} />
         </div>
 
-        {/* ── Galería ── */}
-        {images.length === 0 ? (
-          <EmptyCollection sampleId={sample.id} unit={sample.unit} />
-        ) : (
-          <div className="photo-grid">
-            {images.map((img, i) => (
-              <button
-                key={img}
-                className="photo-thumb"
-                onClick={() => openLightbox(i)}
-                aria-label={`Ver foto ${i + 1}`}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`/collections/${sample.id}/${img}`}
-                  alt={`${sample.id} — ${img}`}
-                  className="photo-thumb-img"
-                  loading="lazy"
-                />
-                <div className="photo-thumb-overlay">
-                  <span style={{ ...mono, fontSize: 7, color: "rgba(140,200,150,0.80)",
-                    letterSpacing: "0.12em" }}>
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
+        {images.length === 0
+          ? <EmptyCollection sampleId={sample.id} />
+          : (
+            <div className="photo-grid">
+              {images.map((img, i) => (
+                <button key={img} className="photo-thumb"
+                  onClick={() => setLightboxIndex(i)} aria-label={`Ver foto ${i + 1}`}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`/collections/${sample.id}/${img}`}
+                    alt={`${sample.id} — ${img}`} className="photo-thumb-img" loading="lazy" />
+                  <div className="photo-thumb-overlay">
+                    <span style={{ ...mono, fontSize: 7, color: "rgba(140,200,150,0.80)", letterSpacing: "0.12em" }}>
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
 
-        {/* ── Pie ── */}
         <div style={{ marginTop: "3rem" }}>
           <DoubleLine />
-          <div style={{ display: "flex", justifyContent: "space-between",
-            flexWrap: "wrap", gap: "0.5rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem" }}>
             <span style={{ ...mono, fontSize: 7, color: "var(--text-faint)", letterSpacing: "0.2em" }}>
               DB_ARCHIVES_V2 — {sample.id}
             </span>
-            <button className="back-btn" onClick={onBack}>
-              ← VOLVER AL INFORME
-            </button>
+            <button className="back-btn" onClick={onBack}>← VOLVER AL INFORME</button>
           </div>
         </div>
-
       </div>
 
-      {/* Lightbox */}
       {lightboxIndex !== null && (
-        <Lightbox
-          images={images}
-          index={lightboxIndex}
-          sampleId={sample.id}
-          onClose={closeLightbox}
-          onPrev={prevImage}
-          onNext={nextImage}
-        />
+        <Lightbox images={images} index={lightboxIndex} sampleId={sample.id}
+          onClose={closeLightbox} onPrev={prevImage} onNext={nextImage} />
       )}
     </div>
   );
@@ -497,15 +405,8 @@ export default function FieldReport() {
   const D = [0, 60, 120, 180, 240, 300, 360];
 
   const activeSample = SAMPLES.find(s => s.id === activeCollection) ?? null;
-
-  // Show collection view
   if (activeSample) {
-    return (
-      <CollectionView
-        sample={activeSample}
-        onBack={() => setActiveCollection(null)}
-      />
-    );
+    return <CollectionView sample={activeSample} onBack={() => setActiveCollection(null)} />;
   }
 
   return (
@@ -515,14 +416,20 @@ export default function FieldReport() {
 
         {/* ── BLOQUE 0 — Encabezado ── */}
         <div className="fade-in" style={{ animationDelay: `${D[0]}ms`, marginBottom: "2.5rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between",
-            alignItems: "flex-start", gap: "1.5rem", position: "relative" }}>
 
+          {/* Mobile: logo centrado arriba */}
+          <div className="header-mineral-mobile">
+            <MineralLogo size={64} opacity={0.50} />
+          </div>
+
+          <div className="header-grid">
             {/* Left */}
-            <div className="header-left" style={{ ...mono, fontSize: 8, letterSpacing: "0.2em",
-              color: "var(--text-faint)", lineHeight: 2.2, textTransform: "uppercase" }}>
-              <div style={{ color: "var(--text-muted)", fontWeight: 700, marginBottom: "0.1rem" }}>
-                DATOS EXTRAÍDOS DE DB_ARCHIVE_V2
+            <div style={{ ...mono, fontSize: 8, letterSpacing: "0.18em",
+              color: "var(--text-faint)", lineHeight: 2.1, textTransform: "uppercase" }}>
+              <div style={{ color: "var(--text-muted)", fontWeight: 700, marginBottom: "0.1rem",
+                display: "flex", alignItems: "center", gap: 4 }}>
+                <MineralLogoSmall />
+                DB_ARCHIVES_V2
               </div>
               <div>Proyecto: DB_archives_v2</div>
               <div>Operador: {AUTHOR.initials}</div>
@@ -530,22 +437,22 @@ export default function FieldReport() {
               <div>Estado: EN PROCESO <BlinkingDots /></div>
             </div>
 
-            {/* Center logo */}
-            <HddLogo />
+            {/* Center logo — desktop only */}
+            <div className="header-mineral-center">
+              <MineralLogo size={88} opacity={0.75} />
+            </div>
 
             {/* Right */}
-            <div style={{ ...mono, fontSize: 8, letterSpacing: "0.2em", color: "var(--text-faint)",
-              lineHeight: 2.2, textTransform: "uppercase", textAlign: "right", flexShrink: 0 }}>
+            <div style={{ ...mono, fontSize: 8, letterSpacing: "0.18em", color: "var(--text-faint)",
+              lineHeight: 2.1, textTransform: "uppercase", textAlign: "right" }}>
               <div>LAT: {AUTHOR.lat}</div>
               <div>LON: {AUTHOR.lon}</div>
               <div>DATUM: WGS-84</div>
-              <div>HOJA: IGM — sin número asignado aún.</div>
+              <div className="header-hoja">HOJA: IGM — sin número asignado aún.</div>
             </div>
           </div>
 
-          <div style={{ marginTop: "1.5rem" }}>
-            <DoubleLine />
-          </div>
+          <div style={{ marginTop: "1.5rem" }}><DoubleLine /></div>
         </div>
 
         {/* ── BLOQUE 1 — Resumen ejecutivo ── */}
@@ -569,59 +476,44 @@ export default function FieldReport() {
               REGISTRO DE MUESTRAS — CAMPAÑA DB_v2
             </p>
             <p style={{ ...mono, fontSize: 8, color: "var(--text-faint)", letterSpacing: "0.1em" }}>
-              n = {SAMPLES.length} unidades clasificadas &nbsp;|&nbsp;
-              método: Observación-Obturador-Procesamiento de las imágenes &nbsp;|&nbsp;
-              clasificación: Raw_data
+              n = {SAMPLES.length} unidades &nbsp;|&nbsp; método: Observación-Obturador &nbsp;|&nbsp; Raw_data
             </p>
             <p style={{ ...mono, fontSize: 7, color: "var(--text-faint)", letterSpacing: "0.08em",
               marginTop: "0.4rem", opacity: 0.7 }}>
               → Selecciona una muestra para acceder a su colección fotográfica
             </p>
           </div>
-          <div style={{ overflowX: "auto" }}>
+          <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
             <table className="samples-table">
               <thead>
                 <tr>
-                  <th style={{ width: "6rem" }}>N° Muestra</th>
-                  <th style={{ width: "7rem" }}>Unidad</th>
-                  <th>Descripción</th>
-                  <th>Observaciones de campo</th>
-                  <th style={{ width: "6rem" }}>Estado</th>
-                  <th style={{ width: "2.5rem" }}></th>
+                  <th style={{ width: "5.5rem", minWidth: "5rem" }}>N° Muestra</th>
+                  <th style={{ width: "6.5rem", minWidth: "6rem" }}>Unidad</th>
+                  <th style={{ minWidth: "12rem" }}>Descripción</th>
+                  <th style={{ minWidth: "10rem" }}>Observaciones</th>
+                  <th style={{ width: "5.5rem", minWidth: "5rem" }}>Estado</th>
+                  <th style={{ width: "2rem" }}></th>
                 </tr>
               </thead>
               <tbody>
                 {SAMPLES.map((s) => (
-                  <tr
-                    key={s.id}
-                    className="sample-row"
+                  <tr key={s.id} className="sample-row"
                     onClick={() => setActiveCollection(s.id)}
-                    role="button"
-                    tabIndex={0}
+                    role="button" tabIndex={0}
                     aria-label={`Abrir colección ${s.id} — ${s.unit}`}
-                    onKeyDown={e => { if (e.key === "Enter" || e.key === " ") setActiveCollection(s.id); }}
-                  >
-                    <td style={{ ...mono, fontSize: 9, color: "var(--text-dim)", fontWeight: 700 }}>
-                      {s.id}
-                    </td>
+                    onKeyDown={e => { if (e.key === "Enter" || e.key === " ") setActiveCollection(s.id); }}>
+                    <td style={{ ...mono, fontSize: 9, color: "var(--text-dim)", fontWeight: 700 }}>{s.id}</td>
                     <td style={{ ...mono, fontSize: 9, textTransform: "uppercase",
-                      color: "var(--text-dim)", letterSpacing: "0.08em" }}>
-                      {s.unit}
-                    </td>
-                    <td style={{ ...mono, fontSize: 9, color: "var(--text-muted)", lineHeight: 1.8 }}>
-                      {s.lithology}
-                    </td>
-                    <td style={{ minWidth: "10rem" }}>
+                      color: "var(--text-dim)", letterSpacing: "0.08em" }}>{s.unit}</td>
+                    <td style={{ ...mono, fontSize: 9, color: "var(--text-muted)", lineHeight: 1.8 }}>{s.lithology}</td>
+                    <td>
                       {s.observation !== "—"
                         ? <em style={{ ...serif, fontSize: 12, color: "#9ec49a" }}>{s.observation}</em>
                         : <span style={{ ...mono, fontSize: 9, color: "var(--text-faint)" }}>—</span>
                       }
                     </td>
                     <td><StatusBadge status={s.status} /></td>
-                    <td style={{ ...mono, fontSize: 10, color: "var(--text-faint)",
-                      textAlign: "center", letterSpacing: 0 }}>
-                      →
-                    </td>
+                    <td style={{ ...mono, fontSize: 10, color: "var(--text-faint)", textAlign: "center" }}>→</td>
                   </tr>
                 ))}
               </tbody>
@@ -638,35 +530,27 @@ export default function FieldReport() {
                 title: "Equipamiento",
                 items: [
                   ["Instrumento", "Fujifilm XH-1 — 25mm · 35mm / FILM also"],
-                  ["Resolución", "24.3 mpx"],
-                  ["Condiciones", "—"],
-                  ["Protocolo", "observación directa"],
+                  ["Resolución", "24.3 mpx"], ["Condiciones", "—"], ["Protocolo", "observación directa"],
                 ],
               },
               {
                 title: "Criterios de clasificación",
                 items: [
                   ["Método", "afinidad composicional"],
-                  ["Escala", "1:∞"],
-                  ["Datum vertical", "sensación"],
-                  ["Referencia", "ninguna externa"],
+                  ["Escala", "1:∞"], ["Datum vertical", "sensación"], ["Referencia", "ninguna externa"],
                 ],
               },
               {
                 title: "Limitaciones conocidas",
                 items: [
-                  ["Cobertura", "parcial"],
-                  ["Repetibilidad", "baja"],
-                  ["Sesgo del operador", "confirmado"],
-                  ["Revisión externa", "no realizada"],
+                  ["Cobertura", "parcial"], ["Repetibilidad", "baja"],
+                  ["Sesgo del operador", "confirmado"], ["Revisión externa", "no realizada"],
                 ],
               },
             ].map((col) => (
               <div key={col.title} style={{ background: "var(--bg-surface)", padding: "1rem" }}>
                 <p style={{ ...mono, fontSize: 7, letterSpacing: "0.25em", textTransform: "uppercase",
-                  color: "var(--text-faint)", marginBottom: "0.75rem" }}>
-                  {col.title}
-                </p>
+                  color: "var(--text-faint)", marginBottom: "0.75rem" }}>{col.title}</p>
                 {col.items.map(([k, v]) => (
                   <div key={k} style={{ ...mono, fontSize: 9, color: "var(--text-muted)", lineHeight: 2 }}>
                     <span style={{ color: "var(--text-faint)" }}>{k}:</span> {v}
@@ -687,30 +571,20 @@ export default function FieldReport() {
         <div className="fade-in" style={{ animationDelay: `${D[5]}ms`, marginBottom: "3rem" }}>
           <SectionLabel>CONCLUSIONES PRELIMINARES — SUJETO A REVISIÓN</SectionLabel>
           {[
-            {
-              num: "01.", italic: false,
-              text: "Las unidades clasificadas no representan la totalidad del registro. La presente documentación refleja el estado parcial de la imágen completa.",
-            },
-            {
-              num: "02.", italic: false,
-              text: "La relación entre unidades es de carácter composicional. El orden de presentación no implica jerarquía ni secuencia temporal.",
-            },
-            {
-              num: "03.", italic: true,
-              text: "el archivo no está terminado.\nnunca lo estará. esa es la condición que siempre perdurará.",
-            },
+            { num: "01.", italic: false,
+              text: "Las unidades clasificadas no representan la totalidad del registro. La presente documentación refleja el estado parcial de la imágen completa." },
+            { num: "02.", italic: false,
+              text: "La relación entre unidades es de carácter composicional. El orden de presentación no implica jerarquía ni secuencia temporal." },
+            { num: "03.", italic: true,
+              text: "el archivo no está terminado.\nnunca lo estará. esa es la condición que siempre perdurará." },
           ].map((item) => (
             <div key={item.num} style={{ display: "flex", gap: "1rem", marginBottom: "1.25rem" }}>
               <span style={{ ...mono, fontSize: 9, color: "var(--text-faint)", flexShrink: 0, paddingTop: item.italic ? 2 : 0 }}>
                 {item.num}
               </span>
               {item.italic
-                ? <em style={{ ...serif, fontSize: 13, color: "#9ec49a", lineHeight: 1.8, whiteSpace: "pre-line" }}>
-                    {item.text}
-                  </em>
-                : <p style={{ ...mono, fontSize: 9, color: "var(--text-muted)", lineHeight: 2 }}>
-                    {item.text}
-                  </p>
+                ? <em style={{ ...serif, fontSize: 13, color: "#9ec49a", lineHeight: 1.8, whiteSpace: "pre-line" }}>{item.text}</em>
+                : <p style={{ ...mono, fontSize: 9, color: "var(--text-muted)", lineHeight: 2 }}>{item.text}</p>
               }
             </div>
           ))}

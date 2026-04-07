@@ -20,7 +20,7 @@
 html {
   zoom: 1.25;
 }
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   html { zoom: 1; }
 }
 
@@ -69,6 +69,9 @@ body {
   margin: 0 auto;
   padding: 2rem 1.5rem 4rem;
 }
+@media (max-width: 600px) {
+  .container { padding: 1.25rem 1rem 3rem; }
+}
 
 /* ─── TABLE ──────────────────────────────────────────────────────────────── */
 .samples-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); }
@@ -100,23 +103,34 @@ body {
 }
 @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
 
-/* ─── HDD LOGO ───────────────────────────────────────────────────────────── */
-.hdd-logo-wrap {
+/* ─── MINERAL LOGO ───────────────────────────────────────────────────────── */
+.mineral-logo-wrap {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  opacity: 0.75;
 }
-@media (max-width: 640px) {
-  .hdd-logo-wrap {
-    position: absolute;
-    left: 0;
-    top: 0;
-    opacity: 0.08;
-    pointer-events: none;
+
+/* ─── HEADER GRID — responsive 3-col on desktop, stacked on mobile ────────── */
+.header-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+.header-mineral-center { display: flex; align-items: center; justify-content: center; }
+.header-mineral-mobile { display: none; justify-content: center; margin-bottom: 1.25rem; }
+
+@media (max-width: 600px) {
+  .header-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
   }
-  .header-left { padding-left: 60px; }
+  .header-mineral-center { display: none; }
+  .header-mineral-mobile { display: flex; }
+  .header-hoja { display: none; }
+  /* Make right column left-aligned on mobile 2-col layout */
+  .header-grid > div:last-child { text-align: left; }
 }
 
 /* ─── SAMPLE ROWS — CLICKEABLE ───────────────────────────────────────────── */
