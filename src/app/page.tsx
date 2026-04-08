@@ -89,64 +89,29 @@ function BlinkingDots() {
   return <span style={{ letterSpacing: "0.05em" }}>{dots}</span>;
 }
 
-// ─── PYRITE LOGO — cubic habit crystal cluster ────────────────────────────────
-// 3 isometric cubes (pyrite habit) + rocky matrix base, simplified line art
-function MineralLogo({ size = 80, opacity = 0.82 }: { size?: number; opacity?: number }) {
-  const s = (v: number) => `rgba(140,200,150,${v})`;
+// ─── PYRITE LOGO — real image from public/pyrite-logo.png ────────────────────
+function MineralLogo({ size = 90, opacity = 0.90 }: { size?: number; opacity?: number }) {
   return (
     <div className="mineral-logo-wrap" style={{ opacity }}>
-      <svg viewBox="0 0 64 88" width={size} aria-hidden fill="none"
-        strokeLinecap="round" strokeLinejoin="round">
-
-        {/* ══ CUBE 1 — main, largest ══════════════════════════════════════════ */}
-        {/* Top face (rhombus) */}
-        <polygon points="30,11  42,18  30,25  18,18"
-          stroke={s(0.68)} strokeWidth="0.75" fill={s(0.07)}/>
-        {/* Left face */}
-        <polygon points="18,18  30,25  30,39  18,32"
-          stroke={s(0.52)} strokeWidth="0.75" fill={s(0.025)}/>
-        {/* Right face */}
-        <polygon points="30,25  42,18  42,32  30,39"
-          stroke={s(0.58)} strokeWidth="0.75" fill={s(0.05)}/>
-
-        {/* ══ CUBE 2 — upper right, medium ═══════════════════════════════════ */}
-        <polygon points="41,14  49,18.5  41,23  33,18.5"
-          stroke={s(0.62)} strokeWidth="0.70" fill={s(0.07)}/>
-        <polygon points="33,18.5  41,23  41,32  33,27.5"
-          stroke={s(0.46)} strokeWidth="0.70" fill={s(0.02)}/>
-        <polygon points="41,23  49,18.5  49,27.5  41,32"
-          stroke={s(0.52)} strokeWidth="0.70" fill={s(0.045)}/>
-
-        {/* ══ CUBE 3 — lower left, small ══════════════════════════════════════ */}
-        <polygon points="20,31  26,34.5  20,38  14,34.5"
-          stroke={s(0.56)} strokeWidth="0.65" fill={s(0.06)}/>
-        <polygon points="14,34.5  20,38  20,45  14,41.5"
-          stroke={s(0.42)} strokeWidth="0.65" fill={s(0.02)}/>
-        <polygon points="20,38  26,34.5  26,41.5  20,45"
-          stroke={s(0.48)} strokeWidth="0.65" fill={s(0.04)}/>
-
-        {/* ══ ROCK MATRIX BASE ════════════════════════════════════════════════ */}
-        {/* Main irregular rock mass */}
-        <path
-          d="M 7,48 L 13,51 L 11,58 L 16,62 L 26,65 L 38,63 L 48,66 L 55,59 L 52,51 L 44,47 L 32,49 L 18,47 Z"
-          stroke={s(0.42)} strokeWidth="0.70" fill={s(0.035)}/>
-        {/* Rock fracture / cleavage detail lines */}
-        <line x1="13" y1="51" x2="20" y2="48" stroke={s(0.20)} strokeWidth="0.4"/>
-        <line x1="16" y1="62" x2="22" y2="58" stroke={s(0.16)} strokeWidth="0.4"/>
-        <line x1="38" y1="63" x2="42" y2="57" stroke={s(0.16)} strokeWidth="0.4"/>
-        <line x1="48" y1="66" x2="52" y2="60" stroke={s(0.14)} strokeWidth="0.4"/>
-
-        {/* ══ LABEL ══════════════════════════════════════════════════════════ */}
-        <text x="32" y="79" fontFamily="var(--font-mono)" fontSize="5.2"
-          fill={s(0.45)} textAnchor="middle" letterSpacing="0.14em">
-          DB_archives
-        </text>
-      </svg>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/pyrite-logo.png"
+        alt="Pirita — DB_archives"
+        width={size}
+        height={size}
+        style={{
+          display: "block",
+          objectFit: "contain",
+          imageRendering: "crisp-edges",
+        }}
+        aria-hidden
+      />
     </div>
   );
 }
 
-// ─── PYRITE LOGO SMALL — inline, next to title ────────────────────────────────
+// ─── PYRITE LOGO SMALL — inline isometric cubes next to title ─────────────────
+// Drawn inline so it always renders regardless of image loading
 function MineralLogoSmall() {
   const s = (v: number) => `rgba(140,200,150,${v})`;
   return (
@@ -162,7 +127,7 @@ function MineralLogoSmall() {
       <polygon points="16,11  23,7  23,15  16,19"
         stroke={s(0.62)} strokeWidth="1.1" fill={s(0.05)}/>
 
-      {/* Small cube attached upper-right */}
+      {/* Small cube upper-right */}
       <polygon points="23,5  28,8  23,11  18,8"
         stroke={s(0.60)} strokeWidth="0.9" fill={s(0.06)}/>
       <polygon points="23,11  28,8  28,14  23,17"
@@ -171,11 +136,12 @@ function MineralLogoSmall() {
       {/* Rock base */}
       <path d="M 4,22 L 8,25 L 7,30 L 16,32 L 26,29 L 28,23 L 20,21 L 10,21 Z"
         stroke={s(0.45)} strokeWidth="0.9" fill={s(0.03)}/>
-      {/* Fracture line */}
       <line x1="8" y1="25" x2="12" y2="22" stroke={s(0.20)} strokeWidth="0.5"/>
     </svg>
   );
 }
+
+
 
 
 // ─── SECTION LABEL ─────────────────────────────────────────────────────────────

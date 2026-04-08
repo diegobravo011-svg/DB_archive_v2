@@ -24,8 +24,12 @@ export const metadata: Metadata = {
     "Informe técnico de campo. Registro visual acumulado durante campañas de observación. Estado: en proceso.",
   icons: {
     icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/pyrite-logo.png", type: "image/png", sizes: "any" },
+      { url: "/favicon.svg",     type: "image/svg+xml" },
       { url: "/favicon.ico" },
+    ],
+    apple: [
+      { url: "/pyrite-logo.png" },
     ],
   },
 };
