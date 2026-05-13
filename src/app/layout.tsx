@@ -1,35 +1,30 @@
 import type { Metadata } from "next";
-import { Space_Mono, Instrument_Serif } from "next/font/google";
+import { DM_Serif_Display, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-const spaceMono = Space_Mono({
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-  variable: "--font-space-mono",
-  display: "swap",
-});
-
-const instrumentSerif = Instrument_Serif({
+const dmSerifDisplay = DM_Serif_Display({
   weight: ["400"],
   style: ["normal", "italic"],
   subsets: ["latin"],
-  variable: "--font-instrument-serif",
+  variable: "--font-dm-serif",
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+  variable: "--font-ibm-mono",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "DB_archives_v2",
+  title: "DB_ARCHIVES_V2 — Diego Bravo Nilo",
   description:
-    "Informe técnico de campo. Registro visual acumulado durante campañas de observación. Estado: en proceso.",
+    "Portafolio fotográfico de Diego Bravo Nilo. Repertorio de trabajos fotográficos desde eventos sociales hasta fotografía comercial y editorial.",
   icons: {
     icon: [
-      { url: "/pyrite-logo.png", type: "image/png", sizes: "any" },
-      { url: "/favicon.svg",     type: "image/svg+xml" },
       { url: "/favicon.ico" },
-    ],
-    apple: [
-      { url: "/pyrite-logo.png" },
     ],
   },
 };
@@ -40,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${spaceMono.variable} ${instrumentSerif.variable}`}>
+    <html lang="es" className={`${dmSerifDisplay.variable} ${ibmPlexMono.variable}`}>
       <body>{children}</body>
     </html>
   );

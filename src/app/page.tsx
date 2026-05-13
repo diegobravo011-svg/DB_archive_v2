@@ -2,48 +2,55 @@
 
 import { useEffect, useState, useCallback } from "react";
 
-// ─── EDITABLE DATA ─────────────────────────────────────────────────────────────
+// ─── DATA ───────────────────────────────────────────────────────────────────
 const AUTHOR = {
-  initials: "DB",
-  startYear: "2026",
-  lat: "-33.4569° S",
-  lon: "-70.6483° O",
+  name:      "DIEGO BRAVO NILO",
+  initials:  "DB",
+  version:   "V.1.0",
+  location:  "SANTIAGO DE CHILE",
+  email:     "fotografhydiego@gmail.com",
+  phone:     "+56 9 6146 9174",
+  ig1:       "@diegobravonn",
+  ig2:       "@diegotookthepic",
+  lat:       "-33.4569° S",
+  lon:       "-70.6483° O",
+  year:      "2026",
+  status:    "EN PROCESO",
 };
 
 const SAMPLES = [
   {
     id: "DB-001", unit: "luz disponible",
-    lithology: "Material de baja cohesión. Alta sensibilidad a condiciones de iluminación ambiente. Textura variable. Granulometría fina a media.",
+    lithology: "Material de baja cohesión. Alta sensibilidad a condiciones de iluminación ambiente.",
     observation: "depende de lo que ya estaba ahí antes de llegar", status: "abierto",
   },
   {
     id: "DB-002", unit: "interiores",
-    lithology: "Unidad de alta presión confinante. Estructuras de compresión visibles. Escasa movilidad de fluidos.",
+    lithology: "Unidad de alta presión confinante. El espacio como agente, no como escenario.",
     observation: "el espacio como agente, no como escenario", status: "abierto",
   },
   {
     id: "DB-003", unit: "tránsito",
-    lithology: "Superficie de transporte activo. Inconformidad basal con unidad subyacente. Evidencia de erosión lateral.",
+    lithology: "Superficie de transporte activo. Evidencia de erosión lateral.",
     observation: "nada permanece lo suficiente como para ser estudiado in situ", status: "abierto",
   },
   {
     id: "DB-004", unit: "figuras",
-    lithology: "Remanente erosional. Resistencia diferencial respecto a la matriz. Morfología preservada por contraste litológico.",
+    lithology: "Remanente erosional. Morfología preservada por contraste.",
     observation: "lo que sobrevive al corte define la forma", status: "abierto",
   },
   {
     id: "DB-005", unit: "horizonte",
-    lithology: "Superficie de contacto entre formaciones. Discontinuidad composicional marcada. Plano de referencia.",
+    lithology: "Superficie de contacto entre formaciones. Plano de referencia.",
     observation: "la línea no es el límite — es el argumento", status: "abierto",
   },
   {
     id: "DB-006", unit: "[sin clasificar]",
-    lithology: "Litología indeterminada. Muestra en proceso de descripción. No incluir en interpretación preliminar.",
+    lithology: "Litología indeterminada. Muestra en proceso de descripción.",
     observation: "—", status: "pendiente",
   },
 ];
 
-// ─── COLLECTIONS ────────────────────────────────────────────────────────────────
 const COLLECTIONS: Record<string, { images: string[] }> = {
   "DB-001": { images: [] },
   "DB-002": { images: [] },
@@ -53,213 +60,43 @@ const COLLECTIONS: Record<string, { images: string[] }> = {
   "DB-006": { images: [] },
 };
 
-// ─── WEEKLY ACTIVITY ───────────────────────────────────────────────────────────
-const ACTIVE_WEEKS: number[] = [
-  0, 0, 0, 0, 0,
-  0, 0, 0, 0,
-  0, 0, 0, 0, 0,
-  1, 0, 0, 0,
-  0, 0,
-];
+// ─── STYLE HELPERS ──────────────────────────────────────────────────────────
+const mono: React.CSSProperties   = { fontFamily: "var(--font-mono)" };
+const serif: React.CSSProperties  = { fontFamily: "var(--font-serif)" };
 
-const WEEKS_2026 = [
-  { w: "W01", m: "ENE", ms: true  }, { w: "W02", m: "ENE", ms: false },
-  { w: "W03", m: "ENE", ms: false }, { w: "W04", m: "ENE", ms: false },
-  { w: "W05", m: "ENE", ms: false }, { w: "W06", m: "FEB", ms: true  },
-  { w: "W07", m: "FEB", ms: false }, { w: "W08", m: "FEB", ms: false },
-  { w: "W09", m: "FEB", ms: false }, { w: "W10", m: "MAR", ms: true  },
-  { w: "W11", m: "MAR", ms: false }, { w: "W12", m: "MAR", ms: false },
-  { w: "W13", m: "MAR", ms: false }, { w: "W14", m: "MAR", ms: false },
-  { w: "W15", m: "ABR", ms: true  }, { w: "W16", m: "ABR", ms: false },
-  { w: "W17", m: "ABR", ms: false }, { w: "W18", m: "ABR", ms: false },
-  { w: "W19", m: "MAY", ms: true  }, { w: "W20", m: "MAY", ms: false },
-];
-
-// ─── STYLE HELPERS ─────────────────────────────────────────────────────────────
-const mono: React.CSSProperties = { fontFamily: "var(--font-mono)" };
-const serif: React.CSSProperties = { fontFamily: "var(--font-serif)", fontStyle: "italic" };
-
-// ─── BLINKING DOTS ─────────────────────────────────────────────────────────────
-function BlinkingDots() {
-  const [dots, setDots] = useState(".");
-  useEffect(() => {
-    const iv = setInterval(() => setDots(d => d.length >= 3 ? "." : d + "."), 450);
-    return () => clearInterval(iv);
-  }, []);
-  return <span style={{ letterSpacing: "0.05em" }}>{dots}</span>;
+// ─── BLINKING CURSOR ────────────────────────────────────────────────────────
+function BlinkCursor() {
+  return <span className="blink" style={{ ...mono, fontSize: 16, color: "var(--blue-cyan)", marginLeft: 2 }}>|</span>;
 }
 
-// ─── PYRITE LOGO — real image from public/pyrite-logo.png ────────────────────
-function MineralLogo({ size = 90, opacity = 0.90 }: { size?: number; opacity?: number }) {
-  return (
-    <div className="mineral-logo-wrap" style={{ opacity }}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/pyrite-logo.png"
-        alt="Pirita — DB_archives"
-        width={size}
-        height={size}
-        style={{
-          display: "block",
-          objectFit: "contain",
-          imageRendering: "crisp-edges",
-        }}
-        aria-hidden
-      />
-    </div>
-  );
-}
-
-// ─── PYRITE LOGO SMALL — inline isometric cubes next to title ─────────────────
-// Drawn inline so it always renders regardless of image loading
-function MineralLogoSmall() {
-  const s = (v: number) => `rgba(140,200,150,${v})`;
-  return (
-    <svg viewBox="0 0 32 38" width={13} height={16} aria-hidden fill="none"
-      strokeLinecap="round" strokeLinejoin="round"
-      style={{ verticalAlign: "middle", display: "inline-block", marginRight: 5, flexShrink: 0 }}>
-
-      {/* Main cube */}
-      <polygon points="16,3  23,7  16,11  9,7"
-        stroke={s(0.72)} strokeWidth="1.1" fill={s(0.07)}/>
-      <polygon points="9,7  16,11  16,19  9,15"
-        stroke={s(0.54)} strokeWidth="1.1" fill={s(0.02)}/>
-      <polygon points="16,11  23,7  23,15  16,19"
-        stroke={s(0.62)} strokeWidth="1.1" fill={s(0.05)}/>
-
-      {/* Small cube upper-right */}
-      <polygon points="23,5  28,8  23,11  18,8"
-        stroke={s(0.60)} strokeWidth="0.9" fill={s(0.06)}/>
-      <polygon points="23,11  28,8  28,14  23,17"
-        stroke={s(0.50)} strokeWidth="0.9" fill={s(0.04)}/>
-
-      {/* Rock base */}
-      <path d="M 4,22 L 8,25 L 7,30 L 16,32 L 26,29 L 28,23 L 20,21 L 10,21 Z"
-        stroke={s(0.45)} strokeWidth="0.9" fill={s(0.03)}/>
-      <line x1="8" y1="25" x2="12" y2="22" stroke={s(0.20)} strokeWidth="0.5"/>
-    </svg>
-  );
-}
-
-
-
-
-// ─── SECTION LABEL ─────────────────────────────────────────────────────────────
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <p style={{ ...mono, fontSize: 7, letterSpacing: "0.3em", textTransform: "uppercase",
-        color: "var(--text-faint)", marginBottom: "0.5rem" }}>
-        {children}
-      </p>
-      <div style={{ width: "100%", height: "0.5px", background: "var(--line)", marginBottom: "1.5rem" }} />
-    </>
-  );
-}
-
-function DoubleLine() {
-  return (
-    <div style={{ marginBottom: "1.5rem" }}>
-      <div style={{ width: "100%", height: "0.5px", background: "var(--line)", marginBottom: 3 }} />
-      <div style={{ width: "100%", height: "0.5px", background: "var(--line)" }} />
-    </div>
-  );
-}
-
-// ─── WEEKLY HISTOGRAM ──────────────────────────────────────────────────────────
-function WeekHistogram() {
-  const rows = 8;
-  return (
-    <div style={{ marginBottom: "3rem" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(20,1fr)", gap: 2, marginBottom: 2 }}>
-        {WEEKS_2026.map((w, i) => (
-          <div key={i} style={{ ...mono, fontSize: 6, color: w.ms ? "var(--text-muted)" : "transparent",
-            borderLeft: w.ms ? "0.5px solid rgba(140,200,150,0.25)" : "none",
-            paddingLeft: 2, overflow: "hidden" }}>
-            {w.m}
-          </div>
-        ))}
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(20,1fr)", gap: 2, marginBottom: 3 }}>
-        {WEEKS_2026.map((w, i) => (
-          <div key={i} style={{ ...mono, fontSize: 5, color: "var(--text-faint)",
-            textAlign: "center", overflow: "hidden", letterSpacing: "0.02em" }}>
-            {w.w}
-          </div>
-        ))}
-      </div>
-      {Array.from({ length: rows }).map((_, r) => (
-        <div key={r} style={{ display: "grid", gridTemplateColumns: "repeat(20,1fr)", gap: 2, marginBottom: 2 }}>
-          {WEEKS_2026.map((_, c) => {
-            const active = ACTIVE_WEEKS[c];
-            return (
-              <div key={c} style={{
-                height: 12,
-                background: active ? "rgba(140,200,150,0.12)" : "rgba(140,200,150,0.03)",
-                border: `0.5px solid ${active ? "rgba(140,200,150,0.30)" : "rgba(140,200,150,0.09)"}`,
-                position: "relative",
-              }}>
-                {active === 1 && (
-                  <div style={{ position: "absolute", inset: 2,
-                    border: "0.5px solid rgba(140,200,150,0.20)" }} />
-                )}
-              </div>
-            );
-          })}
-        </div>
-      ))}
-      <p style={{ ...mono, fontSize: 7, letterSpacing: "0.12em", color: "var(--text-faint)", marginTop: "0.5rem" }}>
-        ■ exposición registrada &nbsp;&nbsp; □ sin registro
-      </p>
-    </div>
-  );
-}
-
-// ─── STATUS BADGE ──────────────────────────────────────────────────────────────
-function StatusBadge({ status }: { status: string }) {
-  const p = status === "pendiente";
-  return (
-    <span style={{ ...mono, display: "inline-block", fontSize: 7, letterSpacing: "0.15em",
-      textTransform: "uppercase", color: p ? "var(--text-faint)" : "var(--text-dim)",
-      border: `0.5px ${p ? "dashed" : "solid"} ${p ? "rgba(140,200,150,0.18)" : "rgba(140,200,150,0.40)"}`,
-      padding: "0.15rem 0.4rem" }}>
-      {status}
-    </span>
-  );
-}
-
-// ─── EMPTY COLLECTION PLACEHOLDER ──────────────────────────────────────────────
+// ─── EMPTY COLLECTION ────────────────────────────────────────────────────────
 function EmptyCollection({ sampleId }: { sampleId: string }) {
   return (
-    <div style={{
-      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-      minHeight: "40vh", gap: "1.5rem", padding: "3rem 1rem",
-    }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 6, opacity: 0.25 }}>
-        {Array.from({ length: 9 }).map((_, i) => (
-          <div key={i} style={{ width: 48, height: 48,
-            border: "0.5px solid rgba(140,200,150,0.40)",
-            background: "rgba(140,200,150,0.03)" }} />
+    <div className="empty-collection">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, opacity: 0.2 }}>
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} style={{
+            width: 52, height: 52,
+            border: "1px solid var(--blue-light)",
+            background: "var(--blue-ghost)",
+          }} />
         ))}
       </div>
       <div style={{ textAlign: "center" }}>
-        <p style={{ ...mono, fontSize: 9, letterSpacing: "0.15em", color: "var(--text-faint)",
+        <p style={{ ...mono, fontSize: 10, letterSpacing: "0.2em", color: "var(--blue-mid)",
           textTransform: "uppercase", marginBottom: "0.5rem" }}>
           Colección vacía — {sampleId}
         </p>
-        <p style={{ ...mono, fontSize: 8, color: "var(--text-faint)", letterSpacing: "0.08em" }}>
+        <p style={{ ...mono, fontSize: 9, color: "var(--blue-light)", letterSpacing: "0.1em" }}>
           Agrega imágenes en{" "}
-          <span style={{ color: "var(--text-dim)" }}>/public/collections/{sampleId}/</span>
-        </p>
-        <p style={{ ...mono, fontSize: 8, color: "var(--text-faint)", marginTop: "0.35rem", letterSpacing: "0.05em" }}>
-          y registra los nombres en <span style={{ color: "var(--text-dim)" }}>COLLECTIONS</span> en page.tsx
+          <span style={{ color: "var(--blue-mid)" }}>/public/collections/{sampleId}/</span>
         </p>
       </div>
     </div>
   );
 }
 
-// ─── LIGHTBOX ──────────────────────────────────────────────────────────────────
+// ─── LIGHTBOX ───────────────────────────────────────────────────────────────
 function Lightbox({ images, index, sampleId, onClose, onPrev, onNext }: {
   images: string[]; index: number; sampleId: string;
   onClose: () => void; onPrev: () => void; onNext: () => void;
@@ -281,7 +118,7 @@ function Lightbox({ images, index, sampleId, onClose, onPrev, onNext }: {
   return (
     <div className="lightbox-overlay" onClick={onClose}>
       <div className="lightbox-counter" onClick={e => e.stopPropagation()}>
-        <span style={{ ...mono, fontSize: 8, color: "var(--text-faint)", letterSpacing: "0.15em" }}>
+        <span style={{ ...mono, fontSize: 9, color: "var(--blue-light)", letterSpacing: "0.15em" }}>
           {String(index + 1).padStart(2, "0")} / {String(images.length).padStart(2, "0")}
         </span>
       </div>
@@ -292,7 +129,7 @@ function Lightbox({ images, index, sampleId, onClose, onPrev, onNext }: {
       <div className="lightbox-img-wrap" onClick={e => e.stopPropagation()}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={src} alt={`${sampleId} — ${images[index]}`} className="lightbox-img" />
-        <p style={{ ...mono, fontSize: 7, color: "var(--text-faint)", marginTop: "0.75rem",
+        <p style={{ ...mono, fontSize: 8, color: "var(--blue-light)", marginTop: "0.75rem",
           letterSpacing: "0.12em", textAlign: "center" }}>
           {images[index]}
         </p>
@@ -302,7 +139,7 @@ function Lightbox({ images, index, sampleId, onClose, onPrev, onNext }: {
           onClick={e => { e.stopPropagation(); onNext(); }} aria-label="Siguiente">→</button>
       )}
       <div className="lightbox-close-hint">
-        <span style={{ ...mono, fontSize: 7, color: "var(--text-faint)", letterSpacing: "0.15em" }}>
+        <span style={{ ...mono, fontSize: 8, color: "var(--blue-light)", letterSpacing: "0.15em" }}>
           ESC — CERRAR &nbsp;|&nbsp; ← → NAVEGAR
         </span>
       </div>
@@ -310,7 +147,7 @@ function Lightbox({ images, index, sampleId, onClose, onPrev, onNext }: {
   );
 }
 
-// ─── COLLECTION VIEW ───────────────────────────────────────────────────────────
+// ─── COLLECTION VIEW ────────────────────────────────────────────────────────
 function CollectionView({ sample, onBack }: { sample: typeof SAMPLES[0]; onBack: () => void }) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const images = COLLECTIONS[sample.id]?.images ?? [];
@@ -323,70 +160,72 @@ function CollectionView({ sample, onBack }: { sample: typeof SAMPLES[0]; onBack:
 
   return (
     <div className="root">
-      <div className="grid-bg" />
+      <div className="paper-lines" />
+      <div className="grain-overlay" />
       <div className="container collection-container">
 
-        <div className="collection-header fade-in">
-          <button className="back-btn" onClick={onBack}>← VOLVER AL INFORME</button>
-          <div style={{ marginTop: "1.5rem" }}><DoubleLine /></div>
+        <div className="fade-in" style={{ animationDelay: "0ms" }}>
+          <button className="back-btn" onClick={onBack}>← VOLVER</button>
+
+          <div className="hr-thin" style={{ marginTop: "1.5rem" }} />
 
           <div style={{ display: "flex", justifyContent: "space-between",
             alignItems: "flex-end", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.5rem" }}>
             <div>
-              <p style={{ ...mono, fontSize: 7, letterSpacing: "0.3em",
-                textTransform: "uppercase", color: "var(--text-faint)", marginBottom: "0.35rem" }}>
-                COLECCIÓN — {sample.id}
-              </p>
-              <h1 style={{ ...mono, fontSize: 14, letterSpacing: "0.15em",
-                textTransform: "uppercase", color: "var(--text-dim)", fontWeight: 700 }}>
+              <span className="section-label">COLECCIÓN — {sample.id}</span>
+              <h1 style={{ ...serif, fontSize: "clamp(28px, 5vw, 52px)",
+                color: "var(--blue-prussian)", fontWeight: 400 }}>
                 {sample.unit}
               </h1>
             </div>
             <div style={{ textAlign: "right" }}>
-              <p style={{ ...mono, fontSize: 7, color: "var(--text-faint)", letterSpacing: "0.12em" }}>
+              <p style={{ ...mono, fontSize: 9, color: "var(--blue-mid)", letterSpacing: "0.15em" }}>
                 N° DE REGISTROS: {images.length}
               </p>
-              <p style={{ ...mono, fontSize: 7, color: "var(--text-faint)", letterSpacing: "0.12em" }}>
-                ESTADO: <span style={{ color: "var(--text-dim)", textTransform: "uppercase" }}>{sample.status}</span>
+              <p style={{ ...mono, fontSize: 9, color: "var(--blue-light)", letterSpacing: "0.15em" }}>
+                ESTADO: <span style={{ color: "var(--blue-cyan)", textTransform: "uppercase" }}>·&nbsp;{sample.status}</span>
               </p>
             </div>
           </div>
 
           {sample.observation !== "—" && (
-            <em style={{ ...serif, fontSize: 12, color: "#9ec49a", display: "block", marginBottom: "0.5rem" }}>
+            <em style={{ ...serif, fontSize: 18, color: "var(--blue-mid)",
+              display: "block", marginBottom: "0.75rem", fontStyle: "italic" }}>
               {sample.observation}
             </em>
           )}
-          <div style={{ width: "100%", height: "0.5px", background: "var(--line)", marginBottom: "2rem" }} />
+          <div className="hr-thin" />
         </div>
 
-        {images.length === 0
-          ? <EmptyCollection sampleId={sample.id} />
-          : (
-            <div className="photo-grid">
-              {images.map((img, i) => (
-                <button key={img} className="photo-thumb"
-                  onClick={() => setLightboxIndex(i)} aria-label={`Ver foto ${i + 1}`}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={`/collections/${sample.id}/${img}`}
-                    alt={`${sample.id} — ${img}`} className="photo-thumb-img" loading="lazy" />
-                  <div className="photo-thumb-overlay">
-                    <span style={{ ...mono, fontSize: 7, color: "rgba(140,200,150,0.80)", letterSpacing: "0.12em" }}>
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
+        <div className="fade-in" style={{ animationDelay: "80ms" }}>
+          {images.length === 0
+            ? <EmptyCollection sampleId={sample.id} />
+            : (
+              <div className="photo-grid">
+                {images.map((img, i) => (
+                  <button key={img} className="photo-thumb"
+                    onClick={() => setLightboxIndex(i)} aria-label={`Ver foto ${i + 1}`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={`/collections/${sample.id}/${img}`}
+                      alt={`${sample.id} — ${img}`} className="photo-thumb-img" loading="lazy" />
+                    <div className="photo-thumb-overlay">
+                      <span style={{ ...mono, fontSize: 8, color: "rgba(212,229,245,0.90)", letterSpacing: "0.12em" }}>
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+        </div>
 
         <div style={{ marginTop: "3rem" }}>
-          <DoubleLine />
+          <div className="hr-thin" />
           <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem" }}>
-            <span style={{ ...mono, fontSize: 7, color: "var(--text-faint)", letterSpacing: "0.2em" }}>
+            <span style={{ ...mono, fontSize: 8, color: "var(--blue-light)", letterSpacing: "0.2em" }}>
               DB_ARCHIVES_V2 — {sample.id}
             </span>
-            <button className="back-btn" onClick={onBack}>← VOLVER AL INFORME</button>
+            <button className="back-btn" onClick={onBack}>← VOLVER</button>
           </div>
         </div>
       </div>
@@ -399,231 +238,262 @@ function CollectionView({ sample, onBack }: { sample: typeof SAMPLES[0]; onBack:
   );
 }
 
-// ─── MAIN PAGE ─────────────────────────────────────────────────────────────────
+// ─── MAIN PAGE ──────────────────────────────────────────────────────────────
 export default function FieldReport() {
   const [mounted, setMounted] = useState(false);
   const [activeCollection, setActiveCollection] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState<"proyectos" | "archivos">("archivos");
+
   useEffect(() => { setMounted(true); }, []);
-  const D = [0, 60, 120, 180, 240, 300, 360];
 
   const activeSample = SAMPLES.find(s => s.id === activeCollection) ?? null;
   if (activeSample) {
     return <CollectionView sample={activeSample} onBack={() => setActiveCollection(null)} />;
   }
 
+  const D = [0, 80, 160, 240, 320, 400, 480];
+
   return (
     <div className="root">
-      <div className="grid-bg" />
+      <div className="paper-lines" />
+      <div className="grain-overlay" />
       <div className="container">
 
-        {/* ── BLOQUE 0 — Encabezado ── */}
-        <div className="fade-in" style={{ animationDelay: `${D[0]}ms`, marginBottom: "2.5rem" }}>
+        {/* ── HEADER ── */}
+        <header className="header-section fade-in" style={{ animationDelay: `${D[0]}ms` }}>
 
-          {/* Mobile: logo centrado arriba */}
-          <div className="header-mineral-mobile">
-            <MineralLogo size={64} opacity={0.50} />
-          </div>
+          {/* Name — enormous, with irregular indentation */}
+          <h1 className="header-name" aria-label="Diego Bravo Nilo">
+            <span style={{ display: "block" }}>DIEGO</span>
+            <span className="line-indent">BRAVO</span>
+            <span className="line-small">NILO</span>
+          </h1>
 
-          <div className="header-grid">
-            {/* Left */}
-            <div style={{ ...mono, fontSize: 8, letterSpacing: "0.18em",
-              color: "var(--text-faint)", lineHeight: 2.1, textTransform: "uppercase" }}>
-              <div style={{ color: "var(--text-muted)", fontWeight: 700, marginBottom: "0.1rem",
-                display: "flex", alignItems: "center", gap: 4 }}>
-                <MineralLogoSmall />
-                DB_ARCHIVES_V2
+          {/* Metadata asimétrica */}
+          <div className="metadata-grid" style={{ marginTop: "2rem" }}>
+            <div className="meta-left">
+              <div>DB_ARCHIVES_V2</div>
+              <div>{AUTHOR.version}</div>
+              <div>{AUTHOR.location}</div>
+              <div>
+                <span className="status-dot" />
+                {AUTHOR.status}<BlinkCursor />
               </div>
-              <div>Proyecto: DB_archives_v2</div>
-              <div>Operador: {AUTHOR.initials}</div>
-              <div>Fecha inicio: {AUTHOR.startYear}</div>
-              <div>Estado: EN PROCESO <BlinkingDots /></div>
             </div>
-
-            {/* Center logo — desktop only */}
-            <div className="header-mineral-center">
-              <MineralLogo size={88} opacity={0.75} />
-            </div>
-
-            {/* Right */}
-            <div style={{ ...mono, fontSize: 8, letterSpacing: "0.18em", color: "var(--text-faint)",
-              lineHeight: 2.1, textTransform: "uppercase", textAlign: "right" }}>
-              <div>LAT: {AUTHOR.lat}</div>
-              <div>LON: {AUTHOR.lon}</div>
-              <div>DATUM: WGS-84</div>
-              <div className="header-hoja">HOJA: IGM — sin número asignado aún.</div>
+            <div className="meta-right">
+              <div>{AUTHOR.email}</div>
+              <div>{AUTHOR.phone}</div>
+              <div>{AUTHOR.ig1}</div>
+              <div>{AUTHOR.ig2}</div>
             </div>
           </div>
 
-          <div style={{ marginTop: "1.5rem" }}><DoubleLine /></div>
-        </div>
+          <div className="hr-thin" style={{ marginTop: "2rem" }} />
+        </header>
 
-        {/* ── BLOQUE 1 — Resumen ejecutivo ── */}
-        <div className="fade-in" style={{ animationDelay: `${D[1]}ms`, marginBottom: "2.5rem" }}>
-          <p style={{ ...mono, fontSize: 10, color: "var(--text-dim)", lineHeight: 2, marginBottom: "1rem" }}>
-            El presente informe documenta el registro visual acumulado durante campañas de observación
-            en campo de múltiples visitas y contextos. Las muestras han sido clasificadas por afinidad
-            composicional, no por orden cronológico de extracción.
-          </p>
-          <p style={{ ...serif, fontSize: 13, color: "#9ec49a", lineHeight: 1.7, marginBottom: "1.5rem" }}>
-            Donde sea que vas, Sigue la luz.
-          </p>
-          <div style={{ width: "100%", height: "0.5px", background: "var(--line)" }} />
-        </div>
+        {/* ── NAVEGACIÓN INLINE ── */}
+        <nav className="nav-inline fade-in" style={{ animationDelay: `${D[1]}ms` }}
+          aria-label="Secciones">
+          <button
+            id="nav-archivos"
+            className="nav-item"
+            onClick={() => setActiveSection("archivos")}
+            style={{ color: activeSection === "archivos" ? "var(--blue-cyan)" : undefined }}
+          >
+            ARCHIVOS
+          </button>
+          <button
+            id="nav-proyectos"
+            className="nav-item"
+            onClick={() => setActiveSection("proyectos")}
+            style={{ color: activeSection === "proyectos" ? "var(--blue-cyan)" : undefined }}
+          >
+            PROYECTOS
+          </button>
+        </nav>
 
-        {/* ── BLOQUE 2 — Tabla de muestras ── */}
+        {/* ── FRASE POÉTICA ── */}
         <div className="fade-in" style={{ animationDelay: `${D[2]}ms`, marginBottom: "3rem" }}>
-          <div style={{ marginBottom: "1rem" }}>
-            <p style={{ ...mono, fontSize: 8, letterSpacing: "0.2em", textTransform: "uppercase",
-              color: "var(--text-faint)", marginBottom: "0.3rem" }}>
-              REGISTRO DE MUESTRAS — CAMPAÑA DB_v2
-            </p>
-            <p style={{ ...mono, fontSize: 8, color: "var(--text-faint)", letterSpacing: "0.1em" }}>
-              n = {SAMPLES.length} unidades &nbsp;|&nbsp; método: Observación-Obturador &nbsp;|&nbsp; Raw_data
-            </p>
-            <p style={{ ...mono, fontSize: 7, color: "var(--text-faint)", letterSpacing: "0.08em",
-              marginTop: "0.4rem", opacity: 0.7 }}>
-              → Selecciona una muestra para acceder a su colección fotográfica
-            </p>
-          </div>
-          <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-            <table className="samples-table">
-              <thead>
-                <tr>
-                  <th style={{ width: "5.5rem", minWidth: "5rem" }}>N° Muestra</th>
-                  <th style={{ width: "6.5rem", minWidth: "6rem" }}>Unidad</th>
-                  <th style={{ minWidth: "12rem" }}>Descripción</th>
-                  <th style={{ minWidth: "10rem" }}>Observaciones</th>
-                  <th style={{ width: "5.5rem", minWidth: "5rem" }}>Estado</th>
-                  <th style={{ width: "2rem" }}></th>
-                </tr>
-              </thead>
-              <tbody>
-                {SAMPLES.map((s) => (
-                  <tr key={s.id} className="sample-row"
-                    onClick={() => setActiveCollection(s.id)}
-                    role="button" tabIndex={0}
-                    aria-label={`Abrir colección ${s.id} — ${s.unit}`}
-                    onKeyDown={e => { if (e.key === "Enter" || e.key === " ") setActiveCollection(s.id); }}>
-                    <td style={{ ...mono, fontSize: 9, color: "var(--text-dim)", fontWeight: 700 }}>{s.id}</td>
-                    <td style={{ ...mono, fontSize: 9, textTransform: "uppercase",
-                      color: "var(--text-dim)", letterSpacing: "0.08em" }}>{s.unit}</td>
-                    <td style={{ ...mono, fontSize: 9, color: "var(--text-muted)", lineHeight: 1.8 }}>{s.lithology}</td>
-                    <td>
-                      {s.observation !== "—"
-                        ? <em style={{ ...serif, fontSize: 12, color: "#9ec49a" }}>{s.observation}</em>
-                        : <span style={{ ...mono, fontSize: 9, color: "var(--text-faint)" }}>—</span>
-                      }
-                    </td>
-                    <td><StatusBadge status={s.status} /></td>
-                    <td style={{ ...mono, fontSize: 10, color: "var(--text-faint)", textAlign: "center" }}>→</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <p className="frase-poetica">
+            &ldquo;Donde sea que vas,<br />Sigue la luz.&rdquo;
+          </p>
+          <div className="hr-irregular" />
         </div>
 
-        {/* ── BLOQUE 3 — Metodología ── */}
-        <div className="fade-in" style={{ animationDelay: `${D[3]}ms`, marginBottom: "3rem" }}>
-          <SectionLabel>METODOLOGÍA Y CONDICIONES DE CAMPAÑA</SectionLabel>
-          <div className="method-grid">
-            {[
-              {
-                title: "Equipamiento",
-                items: [
-                  ["Instrumento", "Fujifilm XH-1 — 25mm · 35mm / FILM also"],
-                  ["Resolución", "24.3 mpx"], ["Condiciones", "—"], ["Protocolo", "observación directa"],
-                ],
-              },
-              {
-                title: "Criterios de clasificación",
-                items: [
-                  ["Método", "afinidad composicional"],
-                  ["Escala", "1:∞"], ["Datum vertical", "sensación"], ["Referencia", "ninguna externa"],
-                ],
-              },
-              {
-                title: "Limitaciones conocidas",
-                items: [
-                  ["Cobertura", "parcial"], ["Repetibilidad", "baja"],
-                  ["Sesgo del operador", "confirmado"], ["Revisión externa", "no realizada"],
-                ],
-              },
-            ].map((col) => (
-              <div key={col.title} style={{ background: "var(--bg-surface)", padding: "1rem" }}>
-                <p style={{ ...mono, fontSize: 7, letterSpacing: "0.25em", textTransform: "uppercase",
-                  color: "var(--text-faint)", marginBottom: "0.75rem" }}>{col.title}</p>
-                {col.items.map(([k, v]) => (
-                  <div key={k} style={{ ...mono, fontSize: 9, color: "var(--text-muted)", lineHeight: 2 }}>
-                    <span style={{ color: "var(--text-faint)" }}>{k}:</span> {v}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ── BLOQUE 4 — Histograma semanal ── */}
-        <div className="fade-in" style={{ animationDelay: `${D[4]}ms`, marginBottom: "3rem" }}>
-          <SectionLabel>DISTRIBUCIÓN DE EXPOSICIONES — HISTOGRAMA ACUMULADO</SectionLabel>
-          {mounted && <WeekHistogram />}
-        </div>
-
-        {/* ── BLOQUE 5 — Conclusiones ── */}
-        <div className="fade-in" style={{ animationDelay: `${D[5]}ms`, marginBottom: "3rem" }}>
-          <SectionLabel>CONCLUSIONES PRELIMINARES — SUJETO A REVISIÓN</SectionLabel>
-          {[
-            { num: "01.", italic: false,
-              text: "Las unidades clasificadas no representan la totalidad del registro. La presente documentación refleja el estado parcial de la imágen completa." },
-            { num: "02.", italic: false,
-              text: "La relación entre unidades es de carácter composicional. El orden de presentación no implica jerarquía ni secuencia temporal." },
-            { num: "03.", italic: true,
-              text: "el archivo no está terminado.\nnunca lo estará. esa es la condición que siempre perdurará." },
-          ].map((item) => (
-            <div key={item.num} style={{ display: "flex", gap: "1rem", marginBottom: "1.25rem" }}>
-              <span style={{ ...mono, fontSize: 9, color: "var(--text-faint)", flexShrink: 0, paddingTop: item.italic ? 2 : 0 }}>
-                {item.num}
+        {/* ── SECCIÓN ARCHIVOS ── */}
+        {activeSection === "archivos" && (
+          <section className="fade-in" style={{ animationDelay: `${D[3]}ms`, marginBottom: "4rem" }}>
+            <span className="section-label">DB_ARCHIVES_V2</span>
+            <h2 style={{ ...serif }}
+              className="section-heading">
+              <span className="section-heading-rotated">DB_ARCHIVES</span>
+              <span style={{ fontSize: "clamp(20px, 3vw, 36px)", color: "var(--blue-cyan)", display: "block", marginTop: "0.1em" }}>
+                _V2
               </span>
-              {item.italic
-                ? <em style={{ ...serif, fontSize: 13, color: "#9ec49a", lineHeight: 1.8, whiteSpace: "pre-line" }}>{item.text}</em>
-                : <p style={{ ...mono, fontSize: 9, color: "var(--text-muted)", lineHeight: 2 }}>{item.text}</p>
-              }
-            </div>
-          ))}
-        </div>
+            </h2>
 
-        {/* ── BLOQUE 6 — Pie de informe ── */}
-        <div className="fade-in" style={{ animationDelay: `${D[6]}ms` }}>
-          <DoubleLine />
-          <div style={{ display: "flex", justifyContent: "space-between",
-            alignItems: "flex-start", gap: "1.5rem", flexWrap: "wrap" }}>
-            <div style={{ ...mono, fontSize: 7, letterSpacing: "0.2em",
-              textTransform: "uppercase", color: "var(--text-faint)", lineHeight: 2.2 }}>
-              <div style={{ fontWeight: 700, fontSize: 8, color: "var(--text-muted)", marginBottom: "0.1rem" }}>
-                DB_archives_v2
-              </div>
-              <div>Operador de campo: {AUTHOR.initials}</div>
-              <div>Revisión: v∞ — sin fecha de cierre</div>
-            </div>
-            <div style={{ ...mono, fontSize: 7, letterSpacing: "0.1em",
-              color: "var(--text-faint)", lineHeight: 2.2, textAlign: "center" }}>
-              <div>Este documento es de carácter preliminar.</div>
-              <div>No reproducir sin autorización del operador.</div>
-              <div>Clasificación: uso interno.</div>
-            </div>
-            <div style={{ display: "flex", gap: 1, flexShrink: 0 }}>
-              {[["ESCALA","1:∞"],["HOJA","1 / ∞"],["ESTADO","activo"]].map(([l,v]) => (
-                <div key={l} style={{ border: "0.5px solid rgba(140,200,150,0.12)",
-                  padding: "0.4rem 0.75rem", textAlign: "center" }}>
-                  <div style={{ ...mono, fontSize: 7, letterSpacing: "0.2em",
-                    textTransform: "uppercase", color: "var(--text-faint)" }}>{l}</div>
-                  <div style={{ ...mono, fontSize: 9, color: "var(--text-muted)",
-                    letterSpacing: "0.1em", marginTop: 2 }}>{v}</div>
+            {/* Lista caotica de archivos */}
+            <div className="archives-list">
+              {SAMPLES.map((s, i) => (
+                <div
+                  key={s.id}
+                  id={`archive-${s.id}`}
+                  className="archive-item"
+                  onClick={() => setActiveCollection(s.id)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Abrir colección ${s.id} — ${s.unit}`}
+                  onKeyDown={e => { if (e.key === "Enter" || e.key === " ") setActiveCollection(s.id); }}
+                  style={{
+                    animationDelay: `${D[3] + i * 60}ms`,
+                  }}
+                >
+                  <span className="archive-id">{s.id}</span>
+                  <span className="archive-unit">{s.unit}</span>
+                  {s.observation !== "—" && (
+                    <span className="archive-observation">{s.observation}</span>
+                  )}
+                  <span className="archive-dot" style={{ color: s.status === "pendiente" ? "var(--blue-ghost)" : "var(--blue-cyan)" }}>·</span>
                 </div>
               ))}
             </div>
+          </section>
+        )}
+
+        {/* ── SECCIÓN PROYECTOS ── */}
+        {activeSection === "proyectos" && (
+          <section className="fade-in" style={{ animationDelay: `${D[3]}ms`, marginBottom: "4rem" }}>
+            <span className="section-label">PROYECTOS</span>
+            <h2 className="section-heading" style={{ ...serif, marginBottom: "0.5em" }}>
+              Proyectos
+            </h2>
+
+            {/* Grilla irregular */}
+            <div className="projects-grid">
+              {[
+                { num: "01", name: "Eventos Sociales" },
+                { num: "02", name: "Comercial" },
+                { num: "03", name: "Editorial" },
+                { num: "04", name: "Retratos" },
+                { num: "05", name: "Urbano" },
+                { num: "06", name: "Luz disponible" },
+                { num: "07", name: "Interiores" },
+                { num: "08", name: "Horizonte" },
+                { num: "09", name: "Sin clasificar" },
+              ].map((p, i) => (
+                <div
+                  key={p.num}
+                  id={`project-${p.num}`}
+                  className="project-card"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Proyecto ${p.num}: ${p.name}`}
+                  style={{
+                    background: i % 3 === 0 ? "var(--cream-dark)" : i % 3 === 1 ? "var(--blue-ghost)" : "var(--cream)",
+                    animationDelay: `${D[3] + i * 50}ms`,
+                  }}
+                >
+                  <div className="project-card-num">{p.num}</div>
+                  <div className="project-card-name">{p.name}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── METODOLOGÍA — siempre visible ── */}
+        {mounted && (
+          <section className="fade-in" style={{ animationDelay: `${D[4]}ms`, marginBottom: "4rem" }}>
+            <span className="section-label">METODOLOGÍA</span>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: "1px",
+              background: "var(--blue-ghost)",
+              border: "1px solid var(--blue-ghost)",
+            }}>
+              {[
+                { title: "Equipamiento", items: [
+                  ["Instrumento", "Fujifilm XH-1"],
+                  ["Lentes", "25mm · 35mm / FILM"],
+                  ["Resolución", "24.3 mpx"],
+                  ["Protocolo", "observación directa"],
+                ]},
+                { title: "Clasificación", items: [
+                  ["Método", "afinidad composicional"],
+                  ["Escala", "1:∞"],
+                  ["Datum", "sensación"],
+                  ["Referencia", "ninguna externa"],
+                ]},
+                { title: "Limitaciones", items: [
+                  ["Cobertura", "parcial"],
+                  ["Repetibilidad", "baja"],
+                  ["Sesgo", "confirmado"],
+                  ["Revisión ext.", "no realizada"],
+                ]},
+              ].map(col => (
+                <div key={col.title} style={{ background: "var(--cream)", padding: "1.25rem" }}>
+                  <p style={{ ...mono, fontSize: 8, letterSpacing: "0.3em", textTransform: "uppercase",
+                    color: "var(--blue-mid)", marginBottom: "0.75rem" }}>{col.title}</p>
+                  {col.items.map(([k, v]) => (
+                    <div key={k} style={{ ...mono, fontSize: 9, color: "var(--blue-prussian)",
+                      lineHeight: 2, opacity: 0.85 }}>
+                      <span style={{ color: "var(--blue-light)" }}>{k}:</span> {v}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── CONCLUSIONES ── */}
+        <section className="fade-in" style={{ animationDelay: `${D[5]}ms`, marginBottom: "4rem" }}>
+          <span className="section-label">CONCLUSIONES PRELIMINARES</span>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            {[
+              { num: "01.", italic: false,
+                text: "Las unidades clasificadas no representan la totalidad del registro. La documentación refleja el estado parcial de la imagen completa." },
+              { num: "02.", italic: false,
+                text: "La relación entre unidades es de carácter composicional. El orden de presentación no implica jerarquía ni secuencia temporal." },
+              { num: "03.", italic: true,
+                text: "el archivo no está terminado.\nnunca lo estará. esa es la condición que siempre perdurará." },
+            ].map(item => (
+              <div key={item.num} style={{ display: "flex", gap: "1rem" }}>
+                <span style={{ ...mono, fontSize: 10, color: "var(--blue-light)", flexShrink: 0, paddingTop: 2 }}>
+                  {item.num}
+                </span>
+                {item.italic
+                  ? <em style={{ ...serif, fontSize: 20, color: "var(--blue-mid)",
+                      fontStyle: "italic", lineHeight: 1.6, whiteSpace: "pre-line" }}>{item.text}</em>
+                  : <p style={{ ...mono, fontSize: 10, color: "var(--blue-prussian)",
+                      lineHeight: 1.9, opacity: 0.8 }}>{item.text}</p>
+                }
+              </div>
+            ))}
           </div>
-        </div>
+        </section>
+
+        {/* ── FOOTER ── */}
+        <footer className="footer-section fade-in" style={{ animationDelay: `${D[6]}ms` }}>
+          <div style={{ display: "flex", justifyContent: "space-between",
+            alignItems: "flex-end", flexWrap: "wrap", gap: "1rem" }}>
+            <div className="footer-coords">
+              <div>LAT: {AUTHOR.lat}</div>
+              <div>LON: {AUTHOR.lon}</div>
+              <div style={{ marginTop: "0.25rem", fontSize: 9 }}>WGS-84 / DATUM</div>
+            </div>
+            <div style={{ ...mono, fontSize: 9, color: "var(--blue-mid)",
+              textAlign: "right", letterSpacing: "0.15em", lineHeight: 2 }}>
+              <div>DB_ARCHIVES_V2</div>
+              <div>{AUTHOR.version} — {AUTHOR.year}</div>
+            </div>
+          </div>
+          <div style={{ ...mono, fontSize: 8, color: "var(--blue-ghost)",
+            textAlign: "center", marginTop: "2rem", letterSpacing: "0.25em", opacity: 0.6 }}>
+            Este documento es de carácter preliminar · No reproducir sin autorización
+          </div>
+        </footer>
 
       </div>
     </div>
