@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key:    process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+/** Configura Cloudinary en runtime (no en module init) para evitar errores con Turbopack */
+function getCloudinary() {
+  cloudinary.config({
+    cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    api_key:    process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+  return cloudinary;
+}
 
 // IDs de demo que Cloudinary incluye por defecto — los excluimos
 const DEMO_PREFIXES = ["samples/", "cld-sample", "main-sample", "sample"];
@@ -20,11 +24,12 @@ type CloudinaryResource = {
 
 /** Trae todos los recursos de una carpeta dinámica con paginación */
 async function fetchByAssetFolder(folder: string): Promise<CloudinaryResource[]> {
+  const cld = getCloudinary();
   const all: CloudinaryResource[] = [];
   let nextCursor: string | undefined;
 
   do {
-    const result = await cloudinary.api.resources_by_asset_folder(folder, {
+    const result = await cld.api.resources_by_asset_folder(folder, {
       max_results: 500,
       ...(nextCursor ? { next_cursor: nextCursor } : {}),
     });
@@ -37,11 +42,12 @@ async function fetchByAssetFolder(folder: string): Promise<CloudinaryResource[]>
 
 /** Trae todos los recursos de la raíz (sin carpeta asignada) con paginación */
 async function fetchRootResources(): Promise<CloudinaryResource[]> {
+  const cld = getCloudinary();
   const all: CloudinaryResource[] = [];
   let nextCursor: string | undefined;
 
   do {
-    const result = await cloudinary.api.resources({
+    const result = await cld.api.resources({
       type: "upload",
       max_results: 500,
       ...(nextCursor ? { next_cursor: nextCursor } : {}),
