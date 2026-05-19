@@ -625,3 +625,86 @@ body {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.5; transform: scale(0.85); }
 }
+
+/* ─── CONTACT LINKS (header) ─────────────────────────────────────────────── */
+.contact-link {
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+.contact-link:hover {
+  color: var(--blue-prussian) !important;
+  opacity: 1 !important;
+  text-decoration: underline;
+  text-decoration-color: var(--blue-light);
+}
+
+/* ─── METADATA GRID — mobile: mantiene 2 columnas ───────────────────────── */
+@media (max-width: 500px) {
+  .metadata-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .meta-right {
+    text-align: right !important;
+  }
+}
+
+/* ─── SOBRE LINK (footer) ────────────────────────────────────────────────── */
+.sobre-link {
+  display: block;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--blue-mid);
+  padding: 0;
+  margin-bottom: 0.75rem;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: var(--blue-ghost);
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+.sobre-link:hover {
+  color: var(--blue-prussian);
+  text-decoration-color: var(--blue-light);
+}
+
+/* ─── SCROLL TO TOP BUTTON ───────────────────────────────────────────────── */
+.scroll-top-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 150;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  background: var(--blue-prussian);
+  color: var(--cream);
+  border: none;
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  border-radius: 2px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease;
+  animation: revealScrollBtn 0.5s ease 1.5s forwards;
+}
+.scroll-top-btn:hover {
+  background: var(--blue-mid);
+  transform: translateY(-2px) !important;
+  opacity: 1 !important;
+}
+
+@keyframes revealScrollBtn {
+  to { opacity: 0.75; transform: translateY(0); }
+}
+
+@media (max-width: 500px) {
+  .scroll-top-btn {
+    bottom: 1.25rem;
+    right: 1.25rem;
+    padding: 0.5rem 0.75rem;
+  }
+}

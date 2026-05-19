@@ -351,11 +351,68 @@ function CollectionView({ sample, onBack }: { sample: typeof SAMPLES[0]; onBack:
   );
 }
 
+// ─── SOBRE DIEGO MODAL ──────────────────────────────────────────────────────
+function SobreModal({ onClose }: { onClose: () => void }) {
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  return (
+    <div className="lightbox-overlay" onClick={onClose}>
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: "var(--cream)",
+          border: "1px solid var(--blue-ghost)",
+          maxWidth: 520, width: "90%",
+          padding: "2.5rem",
+          position: "relative",
+          borderRadius: 2,
+        }}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            position: "absolute", top: "1rem", right: "1rem",
+            background: "none", border: "none", cursor: "pointer",
+            fontFamily: "var(--font-mono)", fontSize: 9,
+            color: "var(--blue-light)", letterSpacing: "0.2em",
+          }}
+        >× CERRAR</button>
+
+        <span style={{
+          fontFamily: "var(--font-mono)", fontSize: 8, letterSpacing: "0.35em",
+          color: "var(--blue-mid)", textTransform: "uppercase",
+          display: "block", marginBottom: "1.75rem",
+        }}>SOBRE DIEGO</span>
+
+        <p style={{
+          fontFamily: "var(--font-serif)", fontSize: 26,
+          color: "var(--blue-prussian)", fontWeight: 400,
+          lineHeight: 1.2, marginBottom: "1.5rem",
+        }}>Diego Bravo Nilo</p>
+
+        <div style={{
+          borderTop: "1px solid var(--blue-ghost)", paddingTop: "1.5rem",
+          fontFamily: "var(--font-mono)", fontSize: 9,
+          color: "var(--blue-light)", letterSpacing: "0.15em", lineHeight: 2,
+          fontStyle: "italic",
+        }}>
+          Próximamente — información en construcción.
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── MAIN PAGE ──────────────────────────────────────────────────────────────
 export default function FieldReport() {
   const [mounted, setMounted] = useState(false);
   const [activeCollection, setActiveCollection] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<"proyectos" | "archivos">("archivos");
+  const [sobreOpen, setSobreOpen] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -394,10 +451,32 @@ export default function FieldReport() {
               </div>
             </div>
             <div className="meta-right">
-              <div>{AUTHOR.email}</div>
-              <div>{AUTHOR.phone}</div>
-              <div>{AUTHOR.ig1}</div>
-              <div>{AUTHOR.ig2}</div>
+              <a
+                href={`mailto:${AUTHOR.email}`}
+                className="contact-link"
+                style={{ color: "inherit", textDecoration: "none", display: "block" }}
+              >{AUTHOR.email}</a>
+              <button
+                className="contact-link"
+                onClick={() => navigator.clipboard.writeText(AUTHOR.phone)}
+                title="Copiar número"
+                style={{
+                  background: "none", border: "none", cursor: "pointer",
+                  fontFamily: "inherit", fontSize: "inherit",
+                  letterSpacing: "inherit", color: "inherit",
+                  padding: 0, display: "block", textAlign: "right" as const,
+                }}
+              >{AUTHOR.phone}</button>
+              <a
+                href="https://instagram.com/diegobravonn" target="_blank"
+                rel="noopener noreferrer" className="contact-link"
+                style={{ color: "inherit", textDecoration: "none", display: "block" }}
+              >{AUTHOR.ig1}</a>
+              <a
+                href="https://instagram.com/diegotookthepic" target="_blank"
+                rel="noopener noreferrer" className="contact-link"
+                style={{ color: "inherit", textDecoration: "none", display: "block" }}
+              >{AUTHOR.ig2}</a>
             </div>
           </div>
 
@@ -481,35 +560,21 @@ export default function FieldReport() {
               Proyectos
             </h2>
 
-            {/* Grilla irregular */}
-            <div className="projects-grid">
-              {[
-                { num: "01", name: "Eventos Sociales" },
-                { num: "02", name: "Comercial" },
-                { num: "03", name: "Editorial" },
-                { num: "04", name: "Retratos" },
-                { num: "05", name: "Urbano" },
-                { num: "06", name: "Luz disponible" },
-                { num: "07", name: "Interiores" },
-                { num: "08", name: "Horizonte" },
-                { num: "09", name: "Sin clasificar" },
-              ].map((p, i) => (
-                <div
-                  key={p.num}
-                  id={`project-${p.num}`}
-                  className="project-card"
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Proyecto ${p.num}: ${p.name}`}
-                  style={{
-                    background: i % 3 === 0 ? "var(--cream-dark)" : i % 3 === 1 ? "var(--blue-ghost)" : "var(--cream)",
-                    animationDelay: `${D[3] + i * 50}ms`,
-                  }}
-                >
-                  <div className="project-card-num">{p.num}</div>
-                  <div className="project-card-name">{p.name}</div>
-                </div>
-              ))}
+            {/* En construcción */}
+            <div style={{
+              marginTop: "1.5rem",
+              padding: "3rem 2rem",
+              border: "1px dashed var(--blue-ghost)",
+              borderRadius: 2,
+              textAlign: "center" as const,
+            }}>
+              <p style={{ ...mono, fontSize: 9, letterSpacing: "0.35em",
+                color: "var(--blue-mid)", textTransform: "uppercase" as const,
+                marginBottom: "0.75rem" }}>EN CONSTRUCCIÓN</p>
+              <p style={{ ...mono, fontSize: 8, color: "var(--blue-light)",
+                letterSpacing: "0.15em" }}>
+                Esta sección está siendo definida · Próximamente
+              </p>
             </div>
           </section>
         )}
@@ -560,30 +625,26 @@ export default function FieldReport() {
           </section>
         )}
 
-        {/* ── CONCLUSIONES ── */}
+        {/* ── CITA FINAL ── */}
         <section className="fade-in" style={{ animationDelay: `${D[5]}ms`, marginBottom: "4rem" }}>
-          <span className="section-label">CONCLUSIONES PRELIMINARES</span>
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-            {[
-              { num: "01.", italic: false,
-                text: "Las unidades clasificadas no representan la totalidad del registro. La documentación refleja el estado parcial de la imagen completa." },
-              { num: "02.", italic: false,
-                text: "La relación entre unidades es de carácter composicional. El orden de presentación no implica jerarquía ni secuencia temporal." },
-              { num: "03.", italic: true,
-                text: "el archivo no está terminado.\nnunca lo estará. esa es la condición que siempre perdurará." },
-            ].map(item => (
-              <div key={item.num} style={{ display: "flex", gap: "1rem" }}>
-                <span style={{ ...mono, fontSize: 10, color: "var(--blue-light)", flexShrink: 0, paddingTop: 2 }}>
-                  {item.num}
-                </span>
-                {item.italic
-                  ? <em style={{ ...serif, fontSize: 20, color: "var(--blue-mid)",
-                      fontStyle: "italic", lineHeight: 1.6, whiteSpace: "pre-line" }}>{item.text}</em>
-                  : <p style={{ ...mono, fontSize: 10, color: "var(--blue-prussian)",
-                      lineHeight: 1.9, opacity: 0.8 }}>{item.text}</p>
-                }
-              </div>
-            ))}
+          <div style={{
+            borderLeft: "2px solid var(--blue-cyan)",
+            paddingLeft: "clamp(1.25rem, 4vw, 3rem)",
+            paddingTop: "0.75rem",
+            paddingBottom: "0.75rem",
+          }}>
+            <em style={{
+              ...serif,
+              fontSize: "clamp(18px, 3.5vw, 32px)",
+              color: "var(--blue-mid)",
+              fontStyle: "italic",
+              lineHeight: 1.65,
+              display: "block",
+            }}>
+              el archivo no está terminado.<br />
+              nunca lo estará. esa es la condición<br />
+              que siempre perdurará.
+            </em>
           </div>
         </section>
 
@@ -592,6 +653,10 @@ export default function FieldReport() {
           <div style={{ display: "flex", justifyContent: "space-between",
             alignItems: "flex-end", flexWrap: "wrap", gap: "1rem" }}>
             <div className="footer-coords">
+              <button
+                onClick={() => setSobreOpen(true)}
+                className="sobre-link"
+              >SOBRE DIEGO</button>
               <div>LAT: {AUTHOR.lat}</div>
               <div>LON: {AUTHOR.lon}</div>
               <div style={{ marginTop: "0.25rem", fontSize: 9 }}>WGS-84 / DATUM</div>
@@ -609,6 +674,17 @@ export default function FieldReport() {
         </footer>
 
       </div>
+
+      {/* ── SCROLL TO TOP ── */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        aria-label="Volver arriba"
+        className="scroll-top-btn"
+      >↑ SUBIR</button>
+
+      {/* ── MODAL SOBRE DIEGO ── */}
+      {sobreOpen && <SobreModal onClose={() => setSobreOpen(false)} />}
+
     </div>
   );
 }
