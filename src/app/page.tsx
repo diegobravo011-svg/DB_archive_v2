@@ -20,38 +20,43 @@ const AUTHOR = {
 
 const SAMPLES = [
   {
-    id: "DB-001", unit: "luz disponible",
+    id: "DB-001", unit: "Proyecto 1",
     lithology: "Material de baja cohesión. Alta sensibilidad a condiciones de iluminación ambiente.",
     observation: "depende de lo que ya estaba ahí antes de llegar", status: "abierto",
   },
   {
-    id: "DB-002", unit: "interiores",
+    id: "DB-002", unit: "Proyecto 2",
     lithology: "Unidad de alta presión confinante. El espacio como agente, no como escenario.",
     observation: "el espacio como agente, no como escenario", status: "abierto",
   },
   {
-    id: "DB-003", unit: "tránsito",
+    id: "DB-003", unit: "Proyecto 3",
     lithology: "Superficie de transporte activo. Evidencia de erosión lateral.",
     observation: "nada permanece lo suficiente como para ser estudiado in situ", status: "abierto",
   },
   {
-    id: "DB-004", unit: "figuras",
+    id: "DB-004", unit: "Proyecto 4",
     lithology: "Remanente erosional. Morfología preservada por contraste.",
     observation: "lo que sobrevive al corte define la forma", status: "abierto",
   },
   {
-    id: "DB-005", unit: "horizonte",
+    id: "DB-005", unit: "Proyecto 5",
     lithology: "Superficie de contacto entre formaciones. Plano de referencia.",
     observation: "la línea no es el límite — es el argumento", status: "abierto",
   },
   {
-    id: "DB-006", unit: "[sin clasificar]",
+    id: "DB-006", unit: "Proyecto 6",
     lithology: "Litología indeterminada. Muestra en proceso de descripción.",
-    observation: "—", status: "pendiente",
+    observation: "—", status: "abierto",
+  },
+  {
+    id: "DB-007", unit: "Proyecto 7",
+    lithology: "Registro extendido. Unidad adicional en expansión continua.",
+    observation: "—", status: "abierto",
   },
 ];
 
-// Mapeo de IDs de muestra → carpeta en Cloudinary
+// Mapeo de IDs de muestra → carpeta dinámica en Cloudinary
 const CLOUDINARY_FOLDERS: Record<string, string> = {
   "DB-001": "Imagenes/Proyecto 1",
   "DB-002": "Imagenes/Proyecto 2",
@@ -59,6 +64,7 @@ const CLOUDINARY_FOLDERS: Record<string, string> = {
   "DB-004": "Imagenes/Proyecto 4",
   "DB-005": "Imagenes/Proyecto 5",
   "DB-006": "Imagenes/Proyecto 6",
+  "DB-007": "Imagenes/Proyecto 7",
 };
 
 // ─── STYLE HELPERS ──────────────────────────────────────────────────────────
