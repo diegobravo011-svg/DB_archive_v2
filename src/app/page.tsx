@@ -20,39 +20,39 @@ const AUTHOR = {
 
 const SAMPLES = [
   {
-    id: "DB-001", unit: "Proyecto 1",
+    id: "DB-001", unit: "Paisajes",
     lithology: "Material de baja cohesión. Alta sensibilidad a condiciones de iluminación ambiente.",
-    observation: "depende de lo que ya estaba ahí antes de llegar", status: "abierto",
+    observation: "una decisión imperfecta a una nunca ejecutada", status: "abierto",
   },
   {
-    id: "DB-002", unit: "Proyecto 2",
+    id: "DB-002", unit: "EURO",
     lithology: "Unidad de alta presión confinante. El espacio como agente, no como escenario.",
-    observation: "el espacio como agente, no como escenario", status: "abierto",
+    observation: "Acepta el arte que has aprendido, y gózate en él", status: "abierto",
   },
   {
-    id: "DB-003", unit: "Proyecto 3",
+    id: "DB-003", unit: "Mirada al Sur",
     lithology: "Superficie de transporte activo. Evidencia de erosión lateral.",
-    observation: "nada permanece lo suficiente como para ser estudiado in situ", status: "abierto",
+    observation: "La naturaleza que todo lo gobierna va a transformar muy en breve todo cuanto ves", status: "abierto",
   },
   {
-    id: "DB-004", unit: "Proyecto 4",
+    id: "DB-004", unit: "Playeras",
     lithology: "Remanente erosional. Morfología preservada por contraste.",
-    observation: "lo que sobrevive al corte define la forma", status: "abierto",
+    observation: "El océano entero no es más que una gota en el universo", status: "abierto",
   },
   {
-    id: "DB-005", unit: "Proyecto 5",
+    id: "DB-005", unit: "Región de Aysén",
     lithology: "Superficie de contacto entre formaciones. Plano de referencia.",
-    observation: "la línea no es el límite — es el argumento", status: "abierto",
+    observation: "Y lo nacido de la tierra vuelve a la tierra", status: "abierto",
   },
   {
-    id: "DB-006", unit: "Proyecto 6",
+    id: "DB-006", unit: "Cotidianidad",
     lithology: "Litología indeterminada. Muestra en proceso de descripción.",
-    observation: "—", status: "abierto",
+    observation: "Combate la fugacidad del tiempo bebiéndolo como si fuera un veloz torrente que no tardará en agotarse", status: "abierto",
   },
   {
-    id: "DB-007", unit: "Proyecto 7",
+    id: "DB-007", unit: "Bs As",
     lithology: "Registro extendido. Unidad adicional en expansión continua.",
-    observation: "—", status: "abierto",
+    observation: "No hay vida más breve que la de quienes olvidan el pasado, ignoran el presente y temen el futuro", status: "abierto",
   },
 ];
 
