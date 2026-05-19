@@ -464,7 +464,8 @@ export default function FieldReport() {
                   background: "none", border: "none", cursor: "pointer",
                   fontFamily: "inherit", fontSize: "inherit",
                   letterSpacing: "inherit", color: "inherit",
-                  padding: 0, display: "block", textAlign: "right" as const,
+                  padding: 0, display: "block",
+                  width: "100%", textAlign: "right" as const,
                 }}
               >{AUTHOR.phone}</button>
               <a
