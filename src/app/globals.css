@@ -424,7 +424,7 @@ body {
 
 /* ─── COLLECTION PAGE ────────────────────────────────────────────────────── */
 .collection-container {
-  max-width: 960px;
+  max-width: 1200px;
 }
 
 .back-btn {
@@ -510,13 +510,12 @@ body {
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(27, 58, 107, 0.96);
+  background: rgba(8, 14, 24, 0.96);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
   animation: fadeIn 0.2s ease forwards;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
 }
 
 .lightbox-img-wrap {
@@ -571,6 +570,22 @@ body {
   left: 50%;
   transform: translateX(-50%);
   white-space: nowrap;
+}
+
+/* ─── MASONRY PORTFOLIO ──────────────────────────────────────────────────── */
+.masonry-thumb:hover .masonry-img,
+.masonry-thumb:focus-visible .masonry-img {
+  transform: scale(1.03);
+  filter: brightness(1.05) saturate(1.1);
+}
+
+.masonry-thumb .masonry-img {
+  filter: brightness(0.92) saturate(0.85);
+}
+
+.masonry-thumb:hover .masonry-overlay,
+.masonry-thumb:focus-visible .masonry-overlay {
+  opacity: 1 !important;
 }
 
 /* ─── EMPTY COLLECTION ───────────────────────────────────────────────────── */

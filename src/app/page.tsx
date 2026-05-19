@@ -99,22 +99,22 @@ function EmptyCollection({ sampleId }: { sampleId: string }) {
 }
 
 // ─── CLOUDINARY IMAGE TYPE ───────────────────────────────────────────────────
-interface CloudImage { url: string; public_id: string; }
+interface CloudImage { url: string; public_id: string; width: number; height: number; format: string; }
 
 // ─── LIGHTBOX ───────────────────────────────────────────────────────────────
 function Lightbox({ images, index, onClose, onPrev, onNext }: {
   images: CloudImage[]; index: number;
   onClose: () => void; onPrev: () => void; onNext: () => void;
 }) {
-  const img   = images[index];
+  const img     = images[index];
   const hasPrev = index > 0;
   const hasNext = index < images.length - 1;
-  const label = img.public_id.split("/").pop() ?? img.public_id;
+  const label   = img.public_id.split("/").pop() ?? img.public_id;
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
-      if (e.key === "ArrowLeft" && hasPrev) onPrev();
+      if (e.key === "ArrowLeft"  && hasPrev) onPrev();
       if (e.key === "ArrowRight" && hasNext) onNext();
     };
     window.addEventListener("keydown", handler);
@@ -123,30 +123,54 @@ function Lightbox({ images, index, onClose, onPrev, onNext }: {
 
   return (
     <div className="lightbox-overlay" onClick={onClose}>
-      <div className="lightbox-counter" onClick={e => e.stopPropagation()}>
-        <span style={{ ...mono, fontSize: 9, color: "var(--blue-light)", letterSpacing: "0.15em" }}>
+      {/* Contador */}
+      <div style={{
+        position: "fixed", top: "1.25rem", left: "50%", transform: "translateX(-50%)",
+        zIndex: 10,
+        background: "rgba(12,18,28,0.75)", backdropFilter: "blur(8px)",
+        border: "1px solid rgba(212,229,245,0.15)",
+        padding: "0.35rem 1rem", borderRadius: 2,
+      }} onClick={e => e.stopPropagation()}>
+        <span style={{ ...mono, fontSize: 9, color: "rgba(212,229,245,0.7)", letterSpacing: "0.25em" }}>
           {String(index + 1).padStart(2, "0")} / {String(images.length).padStart(2, "0")}
+          &nbsp;&nbsp;·&nbsp;&nbsp;{label}
         </span>
       </div>
+
+      {/* Imagen central */}
+      <div className="lightbox-img-wrap" onClick={e => e.stopPropagation()}
+        style={{ display: "flex", alignItems: "center", justifyContent: "center",
+          width: "100%", height: "100%", padding: "4rem 5rem" }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={img.url} alt={label} className="lightbox-img"
+          style={{
+            maxWidth: "100%", maxHeight: "100%",
+            objectFit: "contain",
+            boxShadow: "0 8px 60px rgba(0,0,0,0.7)",
+            borderRadius: 1,
+          }} />
+      </div>
+
+      {/* Nav prev */}
       {hasPrev && (
         <button className="lightbox-nav lightbox-nav--prev"
-          onClick={e => { e.stopPropagation(); onPrev(); }} aria-label="Anterior">←</button>
+          onClick={e => { e.stopPropagation(); onPrev(); }} aria-label="Anterior"
+          style={{ background: "rgba(12,18,28,0.6)", backdropFilter: "blur(6px)" }}>←</button>
       )}
-      <div className="lightbox-img-wrap" onClick={e => e.stopPropagation()}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={img.url} alt={label} className="lightbox-img" />
-        <p style={{ ...mono, fontSize: 8, color: "var(--blue-light)", marginTop: "0.75rem",
-          letterSpacing: "0.12em", textAlign: "center" }}>
-          {label}
-        </p>
-      </div>
+      {/* Nav next */}
       {hasNext && (
         <button className="lightbox-nav lightbox-nav--next"
-          onClick={e => { e.stopPropagation(); onNext(); }} aria-label="Siguiente">→</button>
+          onClick={e => { e.stopPropagation(); onNext(); }} aria-label="Siguiente"
+          style={{ background: "rgba(12,18,28,0.6)", backdropFilter: "blur(6px)" }}>→</button>
       )}
-      <div className="lightbox-close-hint">
-        <span style={{ ...mono, fontSize: 8, color: "var(--blue-light)", letterSpacing: "0.15em" }}>
-          ESC — CERRAR &nbsp;|&nbsp; ← → NAVEGAR
+
+      {/* Hint inferior */}
+      <div style={{
+        position: "fixed", bottom: "1.25rem", left: "50%", transform: "translateX(-50%)",
+        zIndex: 10,
+      }}>
+        <span style={{ ...mono, fontSize: 8, color: "rgba(212,229,245,0.4)", letterSpacing: "0.2em" }}>
+          ESC — CERRAR &nbsp;·&nbsp; ← → NAVEGAR
         </span>
       </div>
     </div>
@@ -230,23 +254,70 @@ function CollectionView({ sample, onBack }: { sample: typeof SAMPLES[0]; onBack:
               </p>
             </div>
           ) : error ? (
-            <div className="empty-collection">
-              <p style={{ ...mono, fontSize: 10, color: "var(--blue-mid)", textAlign: "center" }}>
-                Error al cargar: {error}
+            <div style={{ padding: "3rem", textAlign: "center",
+              border: "1px dashed var(--blue-ghost)", borderRadius: 2 }}>
+              <p style={{ ...mono, fontSize: 9, color: "var(--blue-mid)",
+                letterSpacing: "0.15em", textTransform: "uppercase" }}>
+                ERROR AL CARGAR IMÁGENES
+              </p>
+              <p style={{ ...mono, fontSize: 8, color: "var(--blue-light)", marginTop: "0.5rem" }}>
+                {error}
               </p>
             </div>
           ) : images.length === 0 ? (
             <EmptyCollection sampleId={sample.id} />
           ) : (
-            <div className="photo-grid">
+            /* ── MASONRY PORTFOLIO GRID ── */
+            <div style={{
+              columns: "3 220px",
+              columnGap: "10px",
+              marginTop: "1.5rem",
+            }}>
               {images.map((img, i) => (
-                <button key={img.public_id} className="photo-thumb"
-                  onClick={() => setLightboxIndex(i)} aria-label={`Ver foto ${i + 1}`}>
+                <button
+                  key={img.public_id}
+                  onClick={() => setLightboxIndex(i)}
+                  aria-label={`Ver foto ${i + 1}`}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    marginBottom: "10px",
+                    breakInside: "avoid",
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    cursor: "pointer",
+                    position: "relative",
+                    overflow: "hidden",
+                    borderRadius: 2,
+                  }}
+                  className="masonry-thumb"
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img.url} alt={img.public_id} className="photo-thumb-img" loading="lazy" />
-                  <div className="photo-thumb-overlay">
-                    <span style={{ ...mono, fontSize: 8, color: "rgba(212,229,245,0.90)", letterSpacing: "0.12em" }}>
-                      {String(i + 1).padStart(2, "0")}
+                  <img
+                    src={img.url}
+                    alt={img.public_id}
+                    loading="lazy"
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      display: "block",
+                      transition: "transform 0.4s ease, filter 0.4s ease",
+                    }}
+                    className="masonry-img"
+                  />
+                  {/* Overlay con número */}
+                  <div style={{
+                    position: "absolute", inset: 0,
+                    background: "linear-gradient(to top, rgba(12,18,28,0.6) 0%, transparent 50%)",
+                    opacity: 0,
+                    transition: "opacity 0.3s ease",
+                    display: "flex", alignItems: "flex-end", justifyContent: "flex-start",
+                    padding: "0.75rem",
+                  }} className="masonry-overlay">
+                    <span style={{ ...mono, fontSize: 8, color: "rgba(212,229,245,0.85)",
+                      letterSpacing: "0.2em" }}>
+                      {String(i + 1).padStart(2, "0")} / {String(images.length).padStart(2, "0")}
                     </span>
                   </div>
                 </button>
