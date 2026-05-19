@@ -51,13 +51,14 @@ const SAMPLES = [
   },
 ];
 
-const COLLECTIONS: Record<string, { images: string[] }> = {
-  "DB-001": { images: [] },
-  "DB-002": { images: [] },
-  "DB-003": { images: [] },
-  "DB-004": { images: [] },
-  "DB-005": { images: [] },
-  "DB-006": { images: [] },
+// Mapeo de IDs de muestra → carpeta en Cloudinary
+const CLOUDINARY_FOLDERS: Record<string, string> = {
+  "DB-001": "Imagenes/Proyecto 1",
+  "DB-002": "Imagenes/Proyecto 2",
+  "DB-003": "Imagenes/Proyecto 3",
+  "DB-004": "Imagenes/Proyecto 4",
+  "DB-005": "Imagenes/Proyecto 5",
+  "DB-006": "Imagenes/Proyecto 6",
 };
 
 // ─── STYLE HELPERS ──────────────────────────────────────────────────────────
@@ -71,6 +72,7 @@ function BlinkCursor() {
 
 // ─── EMPTY COLLECTION ────────────────────────────────────────────────────────
 function EmptyCollection({ sampleId }: { sampleId: string }) {
+  const folder = CLOUDINARY_FOLDERS[sampleId] ?? sampleId;
   return (
     <div className="empty-collection">
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, opacity: 0.2 }}>
@@ -88,22 +90,26 @@ function EmptyCollection({ sampleId }: { sampleId: string }) {
           Colección vacía — {sampleId}
         </p>
         <p style={{ ...mono, fontSize: 9, color: "var(--blue-light)", letterSpacing: "0.1em" }}>
-          Agrega imágenes en{" "}
-          <span style={{ color: "var(--blue-mid)" }}>/public/collections/{sampleId}/</span>
+          Sube imágenes a{" "}
+          <span style={{ color: "var(--blue-mid)" }}>Cloudinary › {folder}</span>
         </p>
       </div>
     </div>
   );
 }
 
+// ─── CLOUDINARY IMAGE TYPE ───────────────────────────────────────────────────
+interface CloudImage { url: string; public_id: string; }
+
 // ─── LIGHTBOX ───────────────────────────────────────────────────────────────
-function Lightbox({ images, index, sampleId, onClose, onPrev, onNext }: {
-  images: string[]; index: number; sampleId: string;
+function Lightbox({ images, index, onClose, onPrev, onNext }: {
+  images: CloudImage[]; index: number;
   onClose: () => void; onPrev: () => void; onNext: () => void;
 }) {
-  const src = `/collections/${sampleId}/${images[index]}`;
+  const img   = images[index];
   const hasPrev = index > 0;
   const hasNext = index < images.length - 1;
+  const label = img.public_id.split("/").pop() ?? img.public_id;
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -128,10 +134,10 @@ function Lightbox({ images, index, sampleId, onClose, onPrev, onNext }: {
       )}
       <div className="lightbox-img-wrap" onClick={e => e.stopPropagation()}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={src} alt={`${sampleId} — ${images[index]}`} className="lightbox-img" />
+        <img src={img.url} alt={label} className="lightbox-img" />
         <p style={{ ...mono, fontSize: 8, color: "var(--blue-light)", marginTop: "0.75rem",
           letterSpacing: "0.12em", textAlign: "center" }}>
-          {images[index]}
+          {label}
         </p>
       </div>
       {hasNext && (
@@ -150,7 +156,25 @@ function Lightbox({ images, index, sampleId, onClose, onPrev, onNext }: {
 // ─── COLLECTION VIEW ────────────────────────────────────────────────────────
 function CollectionView({ sample, onBack }: { sample: typeof SAMPLES[0]; onBack: () => void }) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const images = COLLECTIONS[sample.id]?.images ?? [];
+  const [images, setImages]               = useState<CloudImage[]>([]);
+  const [loading, setLoading]             = useState(true);
+  const [error, setError]                 = useState<string | null>(null);
+
+  // Fetch images from Cloudinary via API route
+  useEffect(() => {
+    const folder = CLOUDINARY_FOLDERS[sample.id];
+    if (!folder) { setLoading(false); return; }
+    setLoading(true);
+    setError(null);
+    fetch(`/api/cloudinary?folder=${encodeURIComponent(folder)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) throw new Error(data.error);
+        setImages(data.images ?? []);
+      })
+      .catch(e => setError(String(e.message)))
+      .finally(() => setLoading(false));
+  }, [sample.id]);
 
   const closeLightbox = () => setLightboxIndex(null);
   const prevImage = useCallback(() =>
@@ -180,7 +204,7 @@ function CollectionView({ sample, onBack }: { sample: typeof SAMPLES[0]; onBack:
             </div>
             <div style={{ textAlign: "right" }}>
               <p style={{ ...mono, fontSize: 9, color: "var(--blue-mid)", letterSpacing: "0.15em" }}>
-                N° DE REGISTROS: {images.length}
+                N° DE REGISTROS: {loading ? "—" : images.length}
               </p>
               <p style={{ ...mono, fontSize: 9, color: "var(--blue-light)", letterSpacing: "0.15em" }}>
                 ESTADO: <span style={{ color: "var(--blue-cyan)", textTransform: "uppercase" }}>·&nbsp;{sample.status}</span>
@@ -198,25 +222,37 @@ function CollectionView({ sample, onBack }: { sample: typeof SAMPLES[0]; onBack:
         </div>
 
         <div className="fade-in" style={{ animationDelay: "80ms" }}>
-          {images.length === 0
-            ? <EmptyCollection sampleId={sample.id} />
-            : (
-              <div className="photo-grid">
-                {images.map((img, i) => (
-                  <button key={img} className="photo-thumb"
-                    onClick={() => setLightboxIndex(i)} aria-label={`Ver foto ${i + 1}`}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={`/collections/${sample.id}/${img}`}
-                      alt={`${sample.id} — ${img}`} className="photo-thumb-img" loading="lazy" />
-                    <div className="photo-thumb-overlay">
-                      <span style={{ ...mono, fontSize: 8, color: "rgba(212,229,245,0.90)", letterSpacing: "0.12em" }}>
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
+          {loading ? (
+            <div className="empty-collection">
+              <p style={{ ...mono, fontSize: 10, letterSpacing: "0.2em", color: "var(--blue-mid)",
+                textTransform: "uppercase", textAlign: "center" }}>
+                CARGANDO REGISTROS<span className="blink">_</span>
+              </p>
+            </div>
+          ) : error ? (
+            <div className="empty-collection">
+              <p style={{ ...mono, fontSize: 10, color: "var(--blue-mid)", textAlign: "center" }}>
+                Error al cargar: {error}
+              </p>
+            </div>
+          ) : images.length === 0 ? (
+            <EmptyCollection sampleId={sample.id} />
+          ) : (
+            <div className="photo-grid">
+              {images.map((img, i) => (
+                <button key={img.public_id} className="photo-thumb"
+                  onClick={() => setLightboxIndex(i)} aria-label={`Ver foto ${i + 1}`}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={img.url} alt={img.public_id} className="photo-thumb-img" loading="lazy" />
+                  <div className="photo-thumb-overlay">
+                    <span style={{ ...mono, fontSize: 8, color: "rgba(212,229,245,0.90)", letterSpacing: "0.12em" }}>
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div style={{ marginTop: "3rem" }}>
@@ -231,7 +267,7 @@ function CollectionView({ sample, onBack }: { sample: typeof SAMPLES[0]; onBack:
       </div>
 
       {lightboxIndex !== null && (
-        <Lightbox images={images} index={lightboxIndex} sampleId={sample.id}
+        <Lightbox images={images} index={lightboxIndex}
           onClose={closeLightbox} onPrev={prevImage} onNext={nextImage} />
       )}
     </div>
